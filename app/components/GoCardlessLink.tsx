@@ -267,7 +267,7 @@ export function GoCardlessLink() {
             <h1 className="text-3xl font-bold mb-6">Bank Connection (GoCardless)</h1>
 
             {/* Debug buttons */}
-            <div className="mb-4 flex gap-2">
+            {/* <div className="mb-4 flex gap-2">
                 <ButtonTest onClick={handleTestConnection} />
                 <button
                     onClick={handleCheckAccountStatus}
@@ -281,7 +281,7 @@ export function GoCardlessLink() {
                 >
                     Debug Cache
                 </button>
-            </div>
+            </div> */}
 
             {/* Stored Connection Status */}
             {storedRequisitionId && (

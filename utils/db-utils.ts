@@ -67,8 +67,6 @@ export async function getCachedTransactions(requisitionId: string, maxAgeHours: 
     const db = await getTransactionDb();
     const cached = db.data.transactions[requisitionId];
 
-    console.error('🔍 [CACHE] Looking for requisition ID:', requisitionId);
-    console.error('🔍 [CACHE] Available cache keys:', Object.keys(db.data.transactions));
 
     if (!cached) {
         console.error('❌ [CACHE] No cache found for requisition ID:', requisitionId);

@@ -22,21 +22,6 @@ export function TransactionList(p: { transactions: Transaction[] }) {
         }
     };
 
-
-    const getTransactionDetails = (transaction: Transaction): string[] => {
-        const details: string[] = [];
-
-        if (transaction.remittanceInformationUnstructuredArray && transaction.remittanceInformationUnstructuredArray.length > 1) {
-            details.push(...transaction.remittanceInformationUnstructuredArray.slice(1));
-        }
-
-        if (transaction.bankTransactionCode) {
-            details.push(`Code: ${transaction.bankTransactionCode}`);
-        }
-
-        return details;
-    };
-
     return (
         p.transactions.map((transaction, index) => (
             <div key={index} className="border rounded-lg p-4 bg-white shadow-sm">
@@ -46,18 +31,6 @@ export function TransactionList(p: { transactions: Transaction[] }) {
                             {getTransactionDescription(transaction)}
                         </h3>
                         <p className="text-sm text-gray-500">{formatDateToFrench(transaction.bookingDate)}</p>
-                        {/* {transaction.entryReference && (
-                            <p className="text-xs text-gray-400">Ref: {transaction.entryReference}</p>
-                        )}
-                        {getTransactionDetails(transaction).length > 0 && (
-                            <div className="mt-2">
-                                {getTransactionDetails(transaction).map((detail, detailIndex) => (
-                                    <p key={detailIndex} className="text-xs text-gray-500">
-                                        {detail}
-                                    </p>
-                                ))}
-                            </div>
-                        )} */}
                     </div>
                     <div className="text-right ml-4">
                         <p className={`font-semibold ${parseFloat(transaction.transactionAmount.amount) < 0
