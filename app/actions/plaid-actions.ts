@@ -2,12 +2,19 @@
 
 import { Configuration, PlaidApi, PlaidEnvironments, CountryCode, Products, LinkTokenCreateRequest } from 'plaid';
 
+const plaidBasePath = PlaidEnvironments[process.env.PLAID_ENV as keyof typeof PlaidEnvironments];
+console.log('🔄 [SERVER] Plaid Environment:', plaidBasePath);
+const plaidClientId = process.env.PLAID_CLIENT_ID;
+console.log('🔄 [SERVER] Plaid Client ID:', plaidClientId);
+const plaidSecret = process.env.PLAID_SECRET;
+console.log('🔄 [SERVER] Plaid Secret:', plaidSecret);
+
 const configuration = new Configuration({
-    basePath: PlaidEnvironments.sandbox,
+    basePath: plaidBasePath,
     baseOptions: {
         headers: {
-            'PLAID-CLIENT-ID': process.env.PLAID_CLIENT_ID || '',
-            'PLAID-SECRET': process.env.PLAID_SECRET || '',
+            'PLAID-CLIENT-ID': plaidClientId || '',
+            'PLAID-SECRET': plaidSecret || '',
         },
     },
 });
@@ -17,8 +24,8 @@ const plaidClient = new PlaidApi(configuration);
 
 export async function createLinkToken() {
     console.log('🔄 [SERVER] Starting createLinkToken...');
-    console.log('🔑 [SERVER] Using Plaid Client ID:', process.env.PLAID_CLIENT_ID ? '✅ Set' : '❌ Missing');
-    console.log('🔑 [SERVER] Using Plaid Secret:', process.env.PLAID_SECRET ? '✅ Set' : '❌ Missing');
+    console.log('🔑 [SERVER] Using Plaid Client ID:', plaidClientId ? '✅ Set' : '❌ Missing');
+    console.log('🔑 [SERVER] Using Plaid Secret:', plaidSecret ? '✅ Set' : '❌ Missing');
 
     try {
         const request: LinkTokenCreateRequest = {
@@ -27,8 +34,8 @@ export async function createLinkToken() {
             products: [Products.Transactions],
             country_codes: [CountryCode.Fr],
             language: 'en',
-            client_id: process.env.PLAID_CLIENT_ID,
-            secret: process.env.PLAID_SECRET,
+            client_id: plaidClientId,
+            secret: plaidSecret,
         };
 
         console.log('📤 [SERVER] Creating link token with request:', JSON.stringify(request, null, 2));

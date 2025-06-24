@@ -1,4 +1,3 @@
-import { Providers } from '@/providers/providers';
 
 import { Metadata } from 'next';
 import { ReactNode } from 'react';

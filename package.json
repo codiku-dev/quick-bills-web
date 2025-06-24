@@ -1,9 +1,10 @@
 {
-  "name": "my-app",
+  "name": "quick-bills-web",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "prod": "cross-env NODE_ENV=production next dev; echo process.env.NODE_ENV",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -16,11 +17,12 @@
     "react-plaid-link": "^4.0.1"
   },
   "devDependencies": {
-    "typescript": "^5",
+    "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@tailwindcss/postcss": "^4",
-    "tailwindcss": "^4"
+    "cross-env": "^7.0.3",
+    "tailwindcss": "^4",
+    "typescript": "^5"
   }
 }
