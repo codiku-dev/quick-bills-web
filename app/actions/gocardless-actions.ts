@@ -1,5 +1,7 @@
 'use server';
 
+import { GoCardlessAgreementRequest, GoCardlessAgreementResponse, GoCardlessInstitution, GoCardlessRefreshTokenRequest, GoCardlessRefreshTokenResponse, GoCardlessRequisitionResponse, GoCardlessTokenRequest, GoCardlessTokenResponse, GoCardlessTransactionsResponse } from '@/types/gocardless-types';
+import { getRequisitionDb, getRequisitionIdFromMapping, saveTransactions, getCachedTransactions, getTransactionDb } from '@/utils/db-utils';
 import { randomUUID } from 'crypto';
 
 // GoCardless Bank Account Data API configuration
@@ -12,19 +14,28 @@ let accessToken: string | null = null;
 let refreshToken: string | null = null;
 let tokenExpiry: number = 0;
 
-// Reference ID to Requisition ID mapping (in production, use a proper database)
-const requisitionMapping = new Map<string, string>();
+// Helper function to add delays between API calls
+function delay(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+// Initialize lowdb for requisition mapping
+
+async function saveRequisitionMapping(referenceId: string, requisitionId: string) {
+    const db = await getRequisitionDb();
+    await db.update(({ mappings }) => {
+        mappings[referenceId] = requisitionId;
+    });
+}
 
 async function getAccessToken(): Promise<string> {
     // Check if we have a valid token (with 60-second buffer)
     if (accessToken && tokenExpiry > Date.now() + 60000) {
-        console.log('🔄 [SERVER] Using cached access token ', accessToken);
         return accessToken;
     }
 
     // If we have a refresh token, try to refresh first
     if (refreshToken && tokenExpiry < Date.now()) {
-        console.log('🔄 [SERVER] Access token expired, attempting refresh...');
         try {
             const response = await fetch(`${API_BASE_URL}/token/refresh/`, {
                 method: 'POST',
@@ -34,25 +45,22 @@ async function getAccessToken(): Promise<string> {
                 },
                 body: JSON.stringify({
                     refresh: refreshToken,
-                }),
+                } as GoCardlessRefreshTokenRequest),
             });
 
             if (response.ok) {
-                const tokenData = await response.json() as { access: string; access_expires: number };
+                const tokenData = await response.json() as GoCardlessRefreshTokenResponse;
 
                 if (tokenData.access) {
                     accessToken = tokenData.access;
                     tokenExpiry = Date.now() + (tokenData.access_expires * 1000);
-                    console.log('✅ [SERVER] Access token refreshed successfully');
                     return accessToken;
                 }
             }
         } catch (error) {
-            console.log('⚠️ [SERVER] Token refresh failed, generating new token...');
+            // Token refresh failed, will generate new token
         }
     }
-
-    console.log('🔄 [SERVER] Generating new access token');
 
     try {
         const response = await fetch(`${API_BASE_URL}/token/new/`, {
@@ -64,19 +72,14 @@ async function getAccessToken(): Promise<string> {
             body: JSON.stringify({
                 secret_id: SECRET_ID,
                 secret_key: SECRET_KEY,
-            }),
+            } as GoCardlessTokenRequest),
         });
 
         if (!response.ok) {
             throw new Error(`Token generation failed: ${response.status} ${response.statusText}`);
         }
 
-        const tokenData = await response.json() as {
-            access: string;
-            access_expires: number;
-            refresh: string;
-            refresh_expires: number
-        };
+        const tokenData = await response.json() as GoCardlessTokenResponse;
 
         if (!tokenData.access) {
             throw new Error('No access token received from API');
@@ -87,7 +90,6 @@ async function getAccessToken(): Promise<string> {
         // Convert seconds to milliseconds for Date.now() comparison
         tokenExpiry = Date.now() + (tokenData.access_expires * 1000);
 
-        console.log('✅ [SERVER] New access token generated');
         return accessToken;
     } catch (error: any) {
         console.error('❌ [SERVER] Error generating access token:', error.message);
@@ -99,36 +101,99 @@ async function getAccessToken(): Promise<string> {
     }
 }
 
-async function makeAuthenticatedRequest(endpoint: string, options: RequestInit = {}): Promise<any> {
+async function gocardlessRequest<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
+    // Add a small delay before each request to avoid rate limits
+    await delay(1000); // 1 second delay between requests
+
     const token = await getAccessToken();
-    console.log('🔄 [SERVER] Making authenticated request to:', `${API_BASE_URL}${endpoint}`);
-    console.log('🔄 [SERVER] Token used:', token);
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-        ...options,
-        headers: {
-            'accept': 'application/json',
-            'Authorization': `Bearer ${token}`,
-            ...options.headers,
-        },
-    });
 
-    if (!response.ok) {
-        throw new Error(`API request failed: ${response.status} ${response.statusText}`);
+    try {
+        const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+            ...options,
+            headers: {
+                'accept': 'application/json',
+                'Authorization': `Bearer ${token}`,
+                ...options.headers,
+            },
+        });
+
+        if (response.status === 429) {
+            // Parse detailed rate limit information from response body
+            let rateLimitInfo = {};
+            try {
+                const errorBody = await response.json();
+                rateLimitInfo = {
+                    summary: errorBody.summary,
+                    detail: errorBody.detail,
+                    status_code: errorBody.status_code
+                };
+            } catch (e) {
+                // If we can't parse the response body, use headers
+                const retryAfter = response.headers.get('Retry-After');
+                const rateLimitRemaining = response.headers.get('X-RateLimit-Remaining');
+                const rateLimitReset = response.headers.get('X-RateLimit-Reset');
+                rateLimitInfo = { retryAfter, rateLimitRemaining, rateLimitReset };
+            }
+
+            console.error('❌ [SERVER] Rate limit exceeded:', rateLimitInfo);
+            throw new Error(`Rate limit exceeded: ${JSON.stringify(rateLimitInfo)}`);
+        }
+
+        if (!response.ok) {
+            throw new Error(`API request failed: ${response.status} ${response.statusText}`);
+        }
+
+        return response.json();
+    } catch (error: any) {
+        // No retry logic - just throw the error immediately
+        throw error;
     }
-
-    return response.json();
 }
 
-export async function getInstitutions(country: string) {
+export async function getInstitutions(country: string): Promise<GoCardlessInstitution[]> {
     try {
-        console.log(`🔄 [SERVER] Fetching institutions for country: ${country}`);
-        const institutions = await makeAuthenticatedRequest(`/institutions/?country=${country}`);
-        console.log(`✅ [SERVER] Found ${institutions.length} institutions`);
+        const institutions = await gocardlessRequest<GoCardlessInstitution[]>(`/institutions/?country=${country}`);
         return institutions;
     } catch (error: any) {
-        console.error('❌ [SERVER] Error fetching institutions:', error.message);
         throw new Error('Failed to fetch institutions');
     }
+}
+
+async function createEndUserAgreement(institutionId: string) {
+    try {
+        const agreement = await gocardlessRequest<GoCardlessAgreementResponse>('/agreements/enduser/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                institution_id: institutionId,
+                max_historical_days: 90,
+                access_valid_for_days: 90,
+                access_scope: ['balances', 'details', 'transactions']
+            } as GoCardlessAgreementRequest),
+        });
+        return agreement;
+    } catch (error: any) {
+        throw error; // Re-throw to be handled by caller
+    }
+}
+
+async function createRequisition(institutionId: string, referenceId: string, redirectUrl: string, agreementId?: string) {
+    const session = await gocardlessRequest<{ id: string, link: string, status: string, institution_id: string, created: string }>('/requisitions/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            redirect: redirectUrl,
+            institution_id: institutionId,
+            reference: referenceId,
+            ...(agreementId && { agreement: agreementId }),
+            user_language: 'FR',
+        }),
+    });
+    return session;
 }
 
 export async function initializeSession(institutionId: string) {
@@ -136,61 +201,20 @@ export async function initializeSession(institutionId: string) {
         const referenceId = randomUUID();
         const redirectUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/gocardless/callback`;
 
-        console.log(`🔄 [SERVER] Initializing session for institution: ${institutionId}`);
-        console.log(`🔗 [SERVER] Redirect URL: ${redirectUrl}`);
-        console.log(`🆔 [SERVER] Reference ID: ${referenceId}`);
-
         // Optional: Create an end user agreement with custom terms
-        // This step is optional - if not created, default terms will be applied
         let agreementId: string | undefined;
         try {
-            console.log('🔄 [SERVER] Creating end user agreement...');
-            const agreement = await makeAuthenticatedRequest('/agreements/enduser/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    institution_id: institutionId,
-                    max_historical_days: 90,
-                    access_valid_for_days: 90,
-                    access_scope: ['balances', 'details', 'transactions']
-                }),
-            });
+            const agreement = await createEndUserAgreement(institutionId);
             agreementId = agreement.id;
-            console.log('✅ [SERVER] End user agreement created:', agreementId);
         } catch (error) {
-            console.log('⚠️ [SERVER] Could not create agreement, using default terms');
+            // Token refresh failed, will generate new token
         }
 
         // Create requisition
-        console.log('🔄 [SERVER] Creating requisition...');
-        const session = await makeAuthenticatedRequest('/requisitions/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                redirect: redirectUrl,
-                institution_id: institutionId,
-                reference: referenceId,
-                ...(agreementId && { agreement: agreementId }),
-                user_language: 'EN',
-            }),
-        });
-
-        console.log('✅ [SERVER] Session initialized successfully');
-        console.log('📋 [SERVER] Session details:', {
-            id: session.id,
-            link: session.link,
-            status: session.status,
-            institution_id: session.institution_id,
-            created: session.created
-        });
+        const session = await createRequisition(institutionId, referenceId, redirectUrl, agreementId);
 
         // Store the mapping for callback handling
-        requisitionMapping.set(referenceId, session.id);
-        console.log('🗂️ [SERVER] Stored mapping:', { referenceId, requisitionId: session.id });
+        await saveRequisitionMapping(referenceId, session.id);
 
         return {
             link: session.link,
@@ -198,126 +222,88 @@ export async function initializeSession(institutionId: string) {
             referenceId: referenceId,
         };
     } catch (error: any) {
-        console.error('❌ [SERVER] Error initializing session:', error.message);
-        console.error('📋 [SERVER] Full error details:', error);
         throw new Error('Failed to initialize session');
     }
 }
 
 export async function getAgreementById(agreementId: string) {
     try {
-        console.log(`🔄 [SERVER] Fetching agreement details for ID: ${agreementId}`);
-        const agreement = await makeAuthenticatedRequest(`/agreements/enduser/${agreementId}/`);
-        console.log('✅ [SERVER] Agreement details fetched successfully');
+        const agreement = await gocardlessRequest(`/ agreements / enduser / ${agreementId}/`);
         return agreement;
     } catch (error: any) {
-        console.error('❌ [SERVER] Error fetching agreement:', error.message);
         throw new Error('Failed to fetch agreement details');
     }
 }
 
 export async function testRequisitionExists(requisitionId: string) {
     try {
-        console.log(`🔍 [SERVER] Testing if requisition exists: ${requisitionId}`);
-        const requisition = await makeAuthenticatedRequest(`/requisitions/${requisitionId}/`);
-        console.log('✅ [SERVER] Requisition exists:', {
-            id: requisition.id,
-            status: requisition.status,
-            accounts: requisition.accounts?.length || 0,
-            institution_id: requisition.institution_id,
-            created: requisition.created
-        });
+        const requisition = await gocardlessRequest<GoCardlessRequisitionResponse>(`/requisitions/${requisitionId}/`);
         return requisition;
     } catch (error: any) {
-        console.error('❌ [SERVER] Requisition does not exist or error occurred:', error.message);
         return null;
     }
 }
 
 export async function getRequisitionIdFromReference(referenceId: string): Promise<string | null> {
-    const requisitionId = requisitionMapping.get(referenceId);
+    const requisitionId = await getRequisitionIdFromMapping(referenceId);
     if (requisitionId) {
-        console.log('🗂️ [SERVER] Found requisition ID for reference:', { referenceId, requisitionId });
         return requisitionId;
     }
-    console.log('❌ [SERVER] No requisition ID found for reference:', referenceId);
     return null;
 }
 
-export async function getTransactionsFromRequisition(requisitionId: string) {
+export async function getTransactionsFromRequisition(requisitionId: string, forceRefresh: boolean = false) {
     try {
-        console.log(`🔄 [SERVER] Fetching requisition data for ID: ${requisitionId}`);
+        // Always check cache first (unless force refresh is explicitly requested)
+        const cachedTransactions = await getCachedTransactions(requisitionId, 168); // 7 day cache (168 hours)
+        if (cachedTransactions && !forceRefresh) {
+            console.error('✅ [CACHE] Using cached transactions (API calls limited to 4/day)');
+            return { transactions: cachedTransactions };
+        }
+
+        // Only make API call if no cache exists OR force refresh is explicitly requested
+        if (forceRefresh) {
+            console.error('⚠️ [API] Force refresh requested. Making API call for transactions. Only 4 calls allowed per day!');
+        } else {
+            console.error('⚠️ [API] No cached data found. Making API call for transactions. Only 4 calls allowed per day!');
+        }
 
         // First, let's check if the requisition exists and get its status
-        const requisitionData = await makeAuthenticatedRequest(`/requisitions/${requisitionId}/`);
-        console.log('📋 [SERVER] Requisition data received:', {
-            id: requisitionData.id,
-            status: requisitionData.status,
-            accounts: requisitionData.accounts?.length || 0,
-            institution_id: requisitionData.institution_id,
-            created: requisitionData.created
-        });
+        console.log('🔄 [SERVER] Fetching requisition data for ID:', requisitionId);
+        const requisitionData = await gocardlessRequest<GoCardlessRequisitionResponse>(`/requisitions/${requisitionId}/`);
+        console.log('🔄 [SERVER] Requisition data:', requisitionData);
 
         if (!requisitionData.accounts || requisitionData.accounts.length === 0) {
-            console.log('⚠️ [SERVER] No accounts found for this requisition.');
-            console.log('📋 [SERVER] Requisition status:', requisitionData.status);
-            console.log('📋 [SERVER] Full requisition data:', JSON.stringify(requisitionData, null, 2));
             return { transactions: [], account: null, balances: null };
         }
 
         // We'll just use the first account for this example
         const accountId = requisitionData.accounts[0];
-        console.log(`🔄 [SERVER] Using account ID: ${accountId}`);
-
-        // Fetch account details, balances, and transactions in parallel
-        const [accountDetails, balancesData, transactionsData] = await Promise.all([
-            makeAuthenticatedRequest(`/accounts/${accountId}/`),
-            makeAuthenticatedRequest(`/accounts/${accountId}/balances/`),
-            makeAuthenticatedRequest(`/accounts/${accountId}/transactions/`)
-        ]);
+        console.log('🔄 [SERVER] Fetching transaction for account:', accountId);
+        const transactionsData = await gocardlessRequest<GoCardlessTransactionsResponse>(`/accounts/${accountId}/transactions/`)
+        console.log('🔄 [SERVER] Transactions data:', transactionsData);
 
         const bookedTransactions = transactionsData?.transactions?.booked || [];
-        console.log(`✅ [SERVER] Fetched ${bookedTransactions.length} transactions.`);
-        console.log('🔍 [SERVER] Transactions:', bookedTransactions);
+
+        // Save to cache for future use (7 day cache)
+        await saveTransactions(requisitionId, bookedTransactions);
+        console.error('💾 [CACHE] Transactions saved to cache for 7 days');
+
         return {
             transactions: bookedTransactions,
-            account: accountDetails.account,
-            balances: balancesData?.balances || null
         };
     } catch (error: any) {
-        console.error('❌ [SERVER] Error fetching transactions:', error.message);
-
-        // Add more detailed error information
-        if (error.message.includes('404')) {
-            console.error('🔍 [SERVER] 404 Error - Possible causes:');
-            console.error('   - Requisition ID is invalid or expired');
-            console.error('   - Requisition was not properly created');
-            console.error('   - User did not complete the bank authentication');
-            console.error('   - Requisition was deleted or revoked');
-        }
-
         throw new Error(`Failed to fetch transactions: ${error.message}`);
     }
 }
 
 export async function testGoCardlessConnection() {
     try {
-        console.log('🧪 [SERVER] Testing GoCardless connection...');
-
-        // Test 1: Get access token
-        const token = await getAccessToken();
-        console.log('✅ [SERVER] Access token obtained successfully');
 
         // Test 2: Try to get institutions for a known country
-        const institutions = await makeAuthenticatedRequest('/institutions/?country=fr');
-        console.log(`✅ [SERVER] Successfully fetched ${institutions.length} institutions for FR`);
+        const institutions = await gocardlessRequest<GoCardlessInstitution[]>('/institutions/?country=fr');
         // Test 3: Check if sandbox institution exists
-        const sandboxInstitution = institutions.find((inst: any) => inst.id === 'AGRICOLE_TOURAINE_POITOU_AGRIFRPPXXX');
-        if (sandboxInstitution) {
-            console.log('✅ [SERVER] Sandbox institution found:', sandboxInstitution.name);
-        } else {
-            console.log('⚠️ [SERVER] Sandbox institution not found in FR institutions');
-        }
+        const sandboxInstitution = institutions.find((inst: GoCardlessInstitution) => inst.id === 'AGRICOLE_TOURAINE_POITOU_AGRIFRPPXXX');
 
         return {
             success: true,
@@ -325,10 +311,134 @@ export async function testGoCardlessConnection() {
             hasSandbox: !!sandboxInstitution
         };
     } catch (error: any) {
-        console.error('❌ [SERVER] GoCardless connection test failed:', error.message);
         return {
             success: false,
             error: error.message
         };
+    }
+}
+
+export async function checkRateLimitStatus() {
+    try {
+        // First try to get a real requisition ID from our stored mappings
+        const db = await getRequisitionDb();
+        const storedRequisitionIds = Object.values(db.data.mappings);
+
+        if (storedRequisitionIds.length > 0) {
+            // Test with a real requisition ID to check transaction endpoint rate limits
+            const testRequisitionId = storedRequisitionIds[0];
+            const response = await fetch(`${API_BASE_URL}/requisitions/${testRequisitionId}/`, {
+                headers: {
+                    'accept': 'application/json',
+                    'Authorization': `Bearer ${await getAccessToken()}`,
+                },
+            });
+
+            if (response.status === 429) {
+                // Parse detailed rate limit information from response body
+                let rateLimitInfo = {};
+                try {
+                    const errorBody = await response.json();
+                    rateLimitInfo = {
+                        summary: errorBody.summary,
+                        detail: errorBody.detail,
+                        status_code: errorBody.status_code
+                    };
+                } catch (e) {
+                    // Fallback to headers if body parsing fails
+                    const retryAfter = response.headers.get('Retry-After');
+                    const rateLimitRemaining = response.headers.get('X-RateLimit-Remaining');
+                    const rateLimitReset = response.headers.get('X-RateLimit-Reset');
+                    rateLimitInfo = { retryAfter, rateLimitRemaining, rateLimitReset };
+                }
+
+                console.error('❌ [SERVER] Rate limit exceeded for transactions endpoint');
+                console.error('📊 [SERVER] Rate limit info:', rateLimitInfo);
+
+                return {
+                    rateLimited: true,
+                    ...rateLimitInfo
+                };
+            }
+        } else {
+            // No stored requisitions, test with institutions endpoint
+            const response = await fetch(`${API_BASE_URL}/institutions/?country=fr`, {
+                headers: {
+                    'accept': 'application/json',
+                    'Authorization': `Bearer ${await getAccessToken()}`,
+                },
+            });
+
+            if (response.status === 429) {
+                // Parse detailed rate limit information from response body
+                let rateLimitInfo = {};
+                try {
+                    const errorBody = await response.json();
+                    rateLimitInfo = {
+                        summary: errorBody.summary,
+                        detail: errorBody.detail,
+                        status_code: errorBody.status_code
+                    };
+                } catch (e) {
+                    // Fallback to headers if body parsing fails
+                    const retryAfter = response.headers.get('Retry-After');
+                    const rateLimitRemaining = response.headers.get('X-RateLimit-Remaining');
+                    const rateLimitReset = response.headers.get('X-RateLimit-Reset');
+                    rateLimitInfo = { retryAfter, rateLimitRemaining, rateLimitReset };
+                }
+
+                console.error('❌ [SERVER] Rate limit exceeded for general API');
+                console.error('📊 [SERVER] Rate limit info:', rateLimitInfo);
+
+                return {
+                    rateLimited: true,
+                    ...rateLimitInfo
+                };
+            }
+        }
+
+        return { rateLimited: false };
+    } catch (error: any) {
+        console.error('❌ [SERVER] Error checking rate limit status:', error.message);
+        return { rateLimited: true, error: error.message };
+    }
+}
+
+export async function getCachedTransactionsOnly(requisitionId: string) {
+    try {
+        const cachedTransactions = await getCachedTransactions(requisitionId, 168);
+        if (cachedTransactions) {
+            console.error('✅ [CACHE] Loading cached transactions only (no API call)');
+            return { transactions: cachedTransactions };
+        } else {
+            throw new Error('No cached transactions found');
+        }
+    } catch (error: any) {
+        throw new Error(`No cached data available: ${error.message}`);
+    }
+}
+
+export async function debugCache() {
+    try {
+        const db = await getTransactionDb();
+        const allData = db.data.transactions;
+
+        console.error('📋 [CACHE] All cached data:');
+        const cacheInfo: Record<string, { transactionCount: number; ageHours: number; timestamp: number }> = {};
+        Object.keys(allData).forEach(key => {
+            const data = allData[key];
+            const ageHours = (Date.now() - data.timestamp) / (1000 * 60 * 60);
+            console.error(`  - ${key}: ${data.data.length} transactions (age: ${Math.round(ageHours)}h)`);
+            cacheInfo[key] = {
+                transactionCount: data.data.length,
+                ageHours: Math.round(ageHours),
+                timestamp: data.timestamp
+            };
+        });
+
+        return { success: true, cacheInfo, keys: Object.keys(allData) };
+    } catch (error: any) {
+        console.error('❌ [CACHE] Error debugging cache:', error.message);
+        return { success: false, error: error.message };
     }
 } 

@@ -1,0 +1,161 @@
+{
+    "transactions": {
+        "ef968158-47e3-489b-85e3-2fcc254e2f40": {
+            "data": [
+                {
+                    "entryReference": "7821070074642",
+                    "bookingDate": "2025-06-20",
+                    "valueDate": "2025-06-21",
+                    "transactionAmount": {
+                        "amount": "-8.5",
+                        "currency": "EUR"
+                    },
+                    "remittanceInformationUnstructuredArray": [
+                        "COTISATION Offre Essentiel"
+                    ],
+                    "internalTransactionId": "ff4673fe0bbfd7b8ae74fff882bdf5ff"
+                },
+                {
+                    "entryReference": "7818190001813",
+                    "bookingDate": "2025-06-19",
+                    "valueDate": "2025-06-19",
+                    "transactionAmount": {
+                        "amount": "30491.24",
+                        "currency": "EUR"
+                    },
+                    "remittanceInformationUnstructuredArray": [
+                        "VIREMENT EN VOTRE FAVEUR NOT SO DARK NOTSODAR-224572-0620",
+                        "Virement NOT SO DARK",
+                        "NOTSODAR-224572-062025104335-0"
+                    ],
+                    "internalTransactionId": "7b9182125c648a43a58426875a2d8089"
+                },
+                {
+                    "entryReference": "7814010200728",
+                    "bookingDate": "2025-06-16",
+                    "valueDate": "2025-06-16",
+                    "transactionAmount": {
+                        "amount": "-45.36",
+                        "currency": "EUR"
+                    },
+                    "remittanceInformationUnstructuredArray": [
+                        "PRELEVEMENT MATMUT ROUEN",
+                        "2025061600008850020916584",
+                        "C 36M980000548278M 3225877L 00",
+                        "SOC980000548278MMDT01",
+                        "FR43ZZZ299936"
+                    ],
+                    "internalTransactionId": "c23fc5053e1c2381c1b36046a0f087a3"
+                },
+                {
+                    "entryReference": "7808040208333",
+                    "bookingDate": "2025-06-10",
+                    "valueDate": "2025-06-10",
+                    "transactionAmount": {
+                        "amount": "-66.69",
+                        "currency": "EUR"
+                    },
+                    "remittanceInformationUnstructuredArray": [
+                        "PRELEVEMENT MALAKOFF HUMANIS MUTUELLE",
+                        "514807113546 COTISATIONS",
+                        "514807113546 COTISATIONS",
+                        "++PLE-005-3482270857",
+                        "FR16ZZZ343005"
+                    ],
+                    "internalTransactionId": "4655a644f7a6c512ba437b5f661ec08f"
+                },
+                {
+                    "entryReference": "7778951053528",
+                    "bookingDate": "2025-06-04",
+                    "valueDate": "2025-06-04",
+                    "transactionAmount": {
+                        "amount": "-2000.0",
+                        "currency": "EUR"
+                    },
+                    "remittanceInformationUnstructuredArray": [
+                        "VIREMENT EMIS WEB M.OU MME MADAME GALISSON"
+                    ],
+                    "internalTransactionId": "c26d0cefed9f704b5b90b95d605b227d"
+                },
+                {
+                    "entryReference": "7796930003945",
+                    "bookingDate": "2025-05-28",
+                    "valueDate": "2025-05-28",
+                    "transactionAmount": {
+                        "amount": "4836.10",
+                        "currency": "EUR"
+                    },
+                    "remittanceInformationUnstructuredArray": [
+                        "VIREMENT EN VOTRE FAVEUR NOT SO DARK NOTSODAR-224572-0520",
+                        "Virement NOT SO DARK",
+                        "NOTSODAR-224572-052025112951-28"
+                    ],
+                    "internalTransactionId": "20d12a1aaa3234a87b043d1decc9190c"
+                },
+                {
+                    "entryReference": "7789330073116",
+                    "bookingDate": "2025-05-20",
+                    "valueDate": "2025-05-21",
+                    "transactionAmount": {
+                        "amount": "-8.5",
+                        "currency": "EUR"
+                    },
+                    "remittanceInformationUnstructuredArray": [
+                        "COTISATION Offre Essentiel"
+                    ],
+                    "internalTransactionId": "7bffb509469d1f7bcd4248108e7b065d"
+                },
+                {
+                    "entryReference": "7786770001045",
+                    "bookingDate": "2025-05-19",
+                    "valueDate": "2025-05-19",
+                    "transactionAmount": {
+                        "amount": "35.95",
+                        "currency": "EUR"
+                    },
+                    "remittanceInformationUnstructuredArray": [
+                        "VIREMENT EN VOTRE FAVEUR MHM PREST SANTE PLEIADE 51352380",
+                        "LEBHAR VIGNOLA ROBIN(N25135030C4)",
+                        "513523800796 PRESTATIONS"
+                    ],
+                    "internalTransactionId": "5316388eb02875b0d71f091565eb227e"
+                },
+                {
+                    "entryReference": "7783740005076",
+                    "bookingDate": "2025-05-15",
+                    "valueDate": "2025-05-15",
+                    "transactionAmount": {
+                        "amount": "18.05",
+                        "currency": "EUR"
+                    },
+                    "remittanceInformationUnstructuredArray": [
+                        "VIREMENT EN VOTRE FAVEUR C.P.A.M. TOURS 251340002640",
+                        "251340002640",
+                        "251340002640"
+                    ],
+                    "internalTransactionId": "a6597379b2f4693b9ba43beccbb7c999"
+                },
+                {
+                    "entryReference": "7783570006375",
+                    "bookingDate": "2025-05-15",
+                    "valueDate": "2025-05-15",
+                    "transactionAmount": {
+                        "amount": "-45.36",
+                        "currency": "EUR"
+                    },
+                    "remittanceInformationUnstructuredArray": [
+                        "PRELEVEMENT MATMUT ROUEN",
+                        "2025051500008780020917845",
+                        "C 36M980000548278M 3225877L 00",
+                        "SOC980000548278MMDT01",
+                        "FR43ZZZ299936"
+                    ],
+                    "internalTransactionId": "b531ae28edf03f80feb322190913ea45"
+                }
+            ],
+            "timestamp": 1719240000000,
+            "requisitionId": "ef968158-47e3-489b-85e3-2fcc254e2f40"
+        }
+    },
+    "last_updated": "2025-06-24T14:44:10.292551Z"
+}

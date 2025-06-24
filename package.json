@@ -10,6 +10,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "lowdb": "^7.0.1",
     "next": "15.3.4",
     "plaid": "^36.0.0",
     "react": "^19.0.0",
