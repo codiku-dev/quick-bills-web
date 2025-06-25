@@ -1,14 +1,19 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { GoCardlessLink } from '@/app/components/GoCardlessLink';
+import { GoCardlessLink } from '@/components/GoCardlessLink';
+import { useGoCardlessStore } from '@/store/gocardless-store';
 
+/* 
+    This page is used to handle the callback from GoCardless after the user has connected their bank account.
+   It just wait for the requisition ID to be in the URL query parameters and then redirect to the home page with the requisition ID.
+*/
 export default function GoCardlessCallbackPage() {
     const searchParams = useSearchParams();
-    const [requisitionId, setRequisitionId] = useState<string | null>(null);
+    const { setRequisitionId, requisitionId } = useGoCardlessStore();
 
-    useEffect(() => {
+    useEffect(function extractRequisitionIdFromUrl() {
         // Extract requisition ID from URL parameters
         // GoCardless typically passes the requisition ID as a query parameter
         const ref = searchParams.get('ref');

@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { getTransactionsFromRequisition, getCachedTransactionsOnly } from '@/app/actions/gocardless-actions';
+import { getTransactionsFromRequisition, getCachedTransactionsOnly } from '@/actions/gocardless/gocardless-actions';
 
 export const useTransactions = (requisitionId: string | null, forceRefresh: boolean = false) => {
     return useQuery({

@@ -1,5 +1,5 @@
 import React from 'react';
-import './globals.css';
+import '@/styles/globals.css';
 export default function NotFound() {
   return (
     <div className="flex h-screen items-center justify-center font-system">

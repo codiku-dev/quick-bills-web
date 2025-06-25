@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
-import { getRequisitionIdFromReference } from '@/app/actions/gocardless-actions';
-import { useGoCardlessStore } from '../store/gocardless-store';
+import { getRequisitionIdFromReference } from '@/actions/gocardless/gocardless-actions';
+import { useGoCardlessStore } from '@/store/gocardless-store';
 
 export const useRequisitionId = (referenceId: string | null) => {
     const { setRequisitionId } = useGoCardlessStore();

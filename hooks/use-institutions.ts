@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { getInstitutions } from '@/app/actions/gocardless-actions';
+import { getInstitutions } from '@/actions/gocardless/gocardless-actions';
 
 export const useInstitutions = (country: string = 'FR') => {
     return useQuery({

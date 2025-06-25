@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
-import { initializeSession } from '@/app/actions/gocardless-actions';
+import { initializeSession } from '@/actions/gocardless/gocardless-actions';
 
 export const useBankSession = () => {
     return useMutation({

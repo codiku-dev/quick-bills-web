@@ -1,9 +1,9 @@
 'use server';
 
-import { GoCardlessAgreementRequest, GoCardlessAgreementResponse, GoCardlessInstitution, GoCardlessRequisitionResponse } from '@/types/gocardless-types';
-import { getRequisitionDb, getRequisitionIdFromMapping } from '@/utils/db-utils';
+import { GoCardlessInstitution } from '@/types/gocardless-types';
+import { getRequisitionDb } from '@/utils/db-utils';
 import { randomUUID } from 'crypto';
-import { GoCardlessClient } from '../../lib/gocardless-client';
+import { GoCardlessClient } from '@/lib/gocardless-client';
 
 // Create a singleton instance for server actions
 const client = new GoCardlessClient();
@@ -92,4 +92,9 @@ export async function getRequisitionIdFromReference(referenceId: string): Promis
         return requisitionId;
     }
     return null;
-} 
+}
+
+export async function getRequisitionIdFromMapping(referenceId: string): Promise<string | null> {
+    const db = await getRequisitionDb();
+    return db.data.mappings[referenceId] || null;
+}

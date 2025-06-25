@@ -1,7 +1,8 @@
 'use server';
 
-import { saveTransactions, getCachedTransactions, getTransactionDb } from '@/utils/db-utils';
-import { GoCardlessClient } from '../../lib/gocardless-client';
+import { getTransactionDb } from '@/utils/db-utils';
+import { GoCardlessClient } from '@/lib/gocardless-client';
+import { GoCardlessTransaction } from '@/types/gocardless-types';
 
 // Create a singleton instance for server actions
 const client = new GoCardlessClient();
@@ -9,7 +10,7 @@ const client = new GoCardlessClient();
 export async function getTransactionsFromRequisition(requisitionId: string, forceRefresh: boolean = false) {
     try {
         // Always check cache first (unless force refresh is explicitly requested)
-        const cachedTransactions = await getCachedTransactions(requisitionId, 12); // 0.5 day cache (12 hours)
+        const cachedTransactions = await getTransactionsByRequisitionId(requisitionId, 12); // 0.5 day cache (12 hours)
         if (cachedTransactions && !forceRefresh) {
             console.error('✅ [CACHE] Using cached transactions (API calls limited to 4/day)');
             return { transactions: cachedTransactions };
@@ -51,7 +52,7 @@ export async function getTransactionsFromRequisition(requisitionId: string, forc
 
 export async function getCachedTransactionsOnly(requisitionId: string) {
     try {
-        const cachedTransactions = await getCachedTransactions(requisitionId);
+        const cachedTransactions = await getTransactionsByRequisitionId(requisitionId);
         if (cachedTransactions) {
             console.error('✅ [CACHE] Loading cached transactions only (no API call)');
             return { transactions: cachedTransactions };
@@ -61,5 +62,38 @@ export async function getCachedTransactionsOnly(requisitionId: string) {
     } catch (error: any) {
         throw new Error(`No cached data available: ${error.message}`);
     }
+}
+
+export async function saveTransactions(requisitionId: string, transactions: GoCardlessTransaction[]) {
+    const db = await getTransactionDb();
+    await db.update(({ transactions: cache }) => {
+        cache[requisitionId] = {
+            data: transactions,
+            timestamp: Date.now(),
+            requisitionId
+        };
+    });
+}
+
+
+export async function getTransactionsByRequisitionId(requisitionId: string, maxAgeHours: number = 12): Promise<GoCardlessTransaction[] | null> {
+    const db = await getTransactionDb();
+    const cached = db.data.transactions[requisitionId];
+
+    if (!cached) {
+        console.error('❌ [CACHE] No cache found for requisition ID:', requisitionId);
+        return null;
+    }
+
+    const ageHours = (Date.now() - cached.timestamp) / (1000 * 60 * 60);
+    console.error('🔍 [CACHE] Cache age:', Math.round(ageHours), 'hours');
+
+    if (ageHours > maxAgeHours) {
+        // Cache expired, but do NOT remove it unless a new value is being written
+        console.error('⚠️ [CACHE] Using expired cached data (age:', Math.round(ageHours), 'hours). API calls limited to 4/day.');
+    }
+
+    console.error('✅ [CACHE] Found cached data with', cached.data.length, 'transactions');
+    return cached.data;
 }
 
