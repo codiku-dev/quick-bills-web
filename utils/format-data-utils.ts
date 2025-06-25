@@ -1,4 +1,4 @@
-import { SimplifiedTransaction } from "@/types/bill-types";
+import { SimplifiedTransaction } from "@/types/simplified-transaction-types";
 import { GoCardlessTransaction } from "@/types/gocardless-types";
 
 export const simplifyTransactions = (transactions: GoCardlessTransaction[]): SimplifiedTransaction[] => {
@@ -6,7 +6,8 @@ export const simplifyTransactions = (transactions: GoCardlessTransaction[]): Sim
         id: transaction.internalTransactionId!,
         label: transaction.remittanceInformationUnstructuredArray?.join(' ') || '',
         price: transaction.transactionAmount.amount,
-        date: transaction.bookingDate
+        date: transaction.bookingDate,
+        detail: transaction.remittanceInformationUnstructuredArray?.join(' ') || ''
     }));
     return simplifiedTransactions;
 }

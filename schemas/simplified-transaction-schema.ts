@@ -11,6 +11,3 @@ export const SimplifiedTransactionSchema = z.object({
 
 // Define the Bills array schema
 export const SimplifiedTransactionsArraySchema = z.array(SimplifiedTransactionSchema);
-
-export type SimplifiedTransaction = z.infer<typeof SimplifiedTransactionSchema>;
-export type SimplifiedTransactionArray = z.infer<typeof SimplifiedTransactionsArraySchema>;

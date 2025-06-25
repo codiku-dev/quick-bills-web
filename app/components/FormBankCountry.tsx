@@ -1,11 +1,23 @@
+import { useGoCardlessStore } from '../store/gocardless-store';
+import { useInstitutions } from '../hooks/use-institutions';
 
-export function FormBankCountry(p: { selectedCountry: string, onChangeCountry: (country: string) => void, onSubmit: () => void, isLoading: boolean }) {
+export function FormBankCountry() {
+    const { step, setStep } = useGoCardlessStore();
+    const { isLoading: institutionsLoading } = useInstitutions();
+
+    const handleContinue = () => {
+        setStep('select-bank');
+    };
+
+    if (step !== 'select-country') {
+        return null;
+    }
+
     return (
         <div className="mb-6">
             <h2 className="text-xl font-semibold mb-4">Select Your Country</h2>
             <select
-                value={p.selectedCountry}
-                onChange={(e) => p.onChangeCountry(e.target.value)}
+                defaultValue="FR"
                 className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
                 <option value="GB">United Kingdom</option>
@@ -39,11 +51,11 @@ export function FormBankCountry(p: { selectedCountry: string, onChangeCountry: (
                 <option value="GR">Greece</option>
             </select>
             <button
-                onClick={p.onSubmit}
-                disabled={p.isLoading}
+                onClick={handleContinue}
+                disabled={institutionsLoading}
                 className="mt-4 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 disabled:opacity-50"
             >
-                {p.isLoading ? 'Loading Banks...' : 'Continue'}
+                {institutionsLoading ? 'Loading Banks...' : 'Continue'}
             </button>
         </div>
     );

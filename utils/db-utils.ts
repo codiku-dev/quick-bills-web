@@ -1,7 +1,7 @@
 import { JSONFilePreset } from "lowdb/node";
 import { mkdirSync, existsSync } from "fs";
 import { join } from "path";
-import { SimplifiedTransaction } from "@/types/bill-types";
+import { SimplifiedTransaction } from "@/types/simplified-transaction-types";
 import { GoCardlessTransaction } from "@/types/gocardless-types";
 
 // Reference ID to Requisition ID mapping using lowdb

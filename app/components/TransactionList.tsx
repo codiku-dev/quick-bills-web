@@ -1,4 +1,4 @@
-import { SimplifiedTransaction } from "@/types/bill-types";
+import { SimplifiedTransaction } from "@/types/simplified-transaction-types";
 import { GoCardlessTransaction } from "@/types/gocardless-types";
 
 

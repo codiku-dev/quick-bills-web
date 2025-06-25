@@ -1,13 +1,39 @@
+import { useState } from "react";
 import { Institution } from "@/types/gocardless-types";
+import { useGoCardlessStore } from '../store/gocardless-store';
+import { useBankSession } from '../hooks/use-bank-session';
+import { useInstitutions } from '../hooks/use-institutions';
 
-export function FormSelectBank(p: {
-    inputSearchTerm: string,
-    onChangeInputSearchTerm: (searchTerm: string) => void,
-    filteredInstitutions: Institution[],
-    institutions: Institution[],
-    onClickInstitution: (institutionId: string) => void,
-    onClickBack: () => void
-}) {
+export function FormSelectBank() {
+    const { setStep } = useGoCardlessStore();
+    const { mutate: initializeBankSession, isPending } = useBankSession();
+    const { data: institutions = [] } = useInstitutions();
+    const [searchTerm, setSearchTerm] = useState('');
+
+    // Filter institutions based on search term
+    const filteredInstitutions = institutions.filter(institution => {
+        const normalizeText = (text: string) =>
+            text.toLowerCase()
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, ''); // Remove diacritics/accents
+
+        const normalizedSearchTerm = normalizeText(searchTerm);
+        const normalizedName = normalizeText(institution.name);
+        const normalizedBic = normalizeText(institution.bic);
+
+        return normalizedName.includes(normalizedSearchTerm) ||
+            normalizedBic.includes(normalizedSearchTerm);
+    });
+
+    const handleBack = () => {
+        setStep('select-country');
+        setSearchTerm('');
+    };
+
+    const handleBankSelection = (institutionId: string) => {
+        setStep('connecting');
+        initializeBankSession(institutionId);
+    };
 
     return (
         <div className="mb-6">
@@ -18,23 +44,23 @@ export function FormSelectBank(p: {
                 <input
                     type="text"
                     placeholder="Search banks by name or BIC code..."
-                    value={p.inputSearchTerm}
-                    onChange={(e) => p.onChangeInputSearchTerm(e.target.value)}
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
-                {p.inputSearchTerm && (
+                {searchTerm && (
                     <p className="text-sm text-gray-500 mt-2">
-                        Showing {p.filteredInstitutions.length} of {p.institutions.length} banks
+                        Showing {filteredInstitutions.length} of {institutions.length} banks
                     </p>
                 )}
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {p.filteredInstitutions.map((institution) => (
+                {filteredInstitutions.map((institution) => (
                     <div
                         key={institution.id}
                         className="border rounded-lg p-4 bg-white shadow-sm hover:shadow-md cursor-pointer transition-shadow"
-                        onClick={() => p.onClickInstitution(institution.id)}
+                        onClick={() => handleBankSelection(institution.id)}
                     >
                         <div className="flex items-center space-x-3">
                             {institution.logo && (
@@ -53,11 +79,11 @@ export function FormSelectBank(p: {
                 ))}
             </div>
 
-            {p.filteredInstitutions.length === 0 && p.inputSearchTerm && (
+            {filteredInstitutions.length === 0 && searchTerm && (
                 <div className="text-center py-8">
-                    <p className="text-gray-500">No banks found matching "{p.inputSearchTerm}"</p>
+                    <p className="text-gray-500">No banks found matching "{searchTerm}"</p>
                     <button
-                        onClick={() => p.onChangeInputSearchTerm('')}
+                        onClick={() => setSearchTerm('')}
                         className="mt-2 text-blue-600 hover:text-blue-800"
                     >
                         Clear search
@@ -66,7 +92,7 @@ export function FormSelectBank(p: {
             )}
 
             <button
-                onClick={p.onClickBack}
+                onClick={handleBack}
                 className="mt-4 text-blue-600 hover:text-blue-800"
             >
                 ← Back to Country Selection
