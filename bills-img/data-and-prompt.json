@@ -1,0 +1,150 @@
+Here is an array of bills objects ( label, price and date of bill).
+I will in the next messages i will  send  images of bill and you will return the closest object from the array that matches the image
+
+
+[
+    {
+        "id": 1,
+        "label": "PAIEMENT PAR CARTE X3141 BAGELSTEIN PARIS 914 28/12",
+        "price": "19.10",
+        "date": "2018-12-28"
+    },
+    {
+        "id": 2,
+        "label": "PAIEMENT PAR CARTE X3141 STARBUCKS STPIE09811 11/03",
+        "price": "8.50",
+        "date": "2018-03-11"
+    },
+    {
+        "id": 3,
+        "label": "PAIEMENT PAR CARTE X3141 BAGELSTEIN PARIS 914 25/03",
+        "price": "9.7",
+        "date": "2025-03-26"
+    },
+    {
+        "id": 4,
+        "label": "PAIEMENT PAR CARTE X3141 UEP*SUPER U MONTLOUI 25/05",
+        "price": "23.99",
+        "date": "2024-07-06"
+    },
+    {
+        "id": 5,
+        "label": "PAIEMENT PAR CARTE X3141 STARBUCKS STPIE09811 27/05",
+        "price": "12",
+        "date": "2018-04-11"
+    },
+    {
+        "id": 6,
+        "label": "PAIEMENT PAR CARTE X3141 UEP*SUPER U MONTLOUI 25/05",
+        "price": "171.11",
+        "date": "2025-05-26"
+    },
+    {
+        "id": 7,
+        "label": "PAIEMENT PAR CARTE X3141 STARBUCKS STPIE09811 06/07",
+        "price": "6.50",
+        "date": "2008-07-06"
+    },
+    {
+        "id": 8,
+        "label": "PAIEMENT PAR CARTE X3141 MONOP MARK SPEN PARI 15/04",
+        "price": "14.06",
+        "date": "2025-04-16"
+    },
+    {
+        "id": 9,
+        "label": "PAIEMENT PAR CARTE X3141 BAGELSTEIN PARIS 914 25/03",
+        "price": "3.7",
+        "date": "2017-12-28"
+    },
+    {
+        "id": 10,
+        "label": "PAIEMENT PAR CARTE X3141 MONOP MARK SPEN PARI 15/04",
+        "price": "5.75",
+        "date": "2025-04-16"
+    },
+    {
+        "id": 11,
+        "label": "PAIEMENT PAR CARTE X3141 PITAYA NEUILLY SUR S 26/09",
+        "price": "13.5",
+        "date": "2022-09-26"
+    },
+    {
+        "id": 12,
+        "label": "PAIEMENT PAR CARTE X3141 PITAYA NEUILLY SUR S 28/03",
+        "price": "12.5",
+        "date": "2025-03-28"
+    },
+    {
+        "id": 13,
+        "label": "PAIEMENT PAR CARTE X3141 TOKYO PARIS 914 25/03",
+        "price": "3.7",
+        "date": "2025-12-28"
+    },
+    {
+        "id": 14,
+        "label": "PAIEMENT PAR CARTE X3141 CGF17255PAUL PARIS 29/08",
+        "price": "3.95",
+        "date": "2017-08-29"
+    },
+    {
+        "id": 15,
+        "label": "PAIEMENT PAR CARTE X3141 LECOINTRE PARIS S La 25/03",
+        "price": "17.06",
+        "date": "2025-03-26"
+    },
+    {
+        "id": 16,
+        "label": "VIREMENT EN VOTRE FAVEUR TLD EUROPE EURSEPA030660",
+        "price": "760.00",
+        "date": "2025-05-13"
+    },
+    {
+        "id": 17,
+        "label": "PRELEVEMENT ORANGE SA-ORANGE",
+        "price": "19.65",
+        "date": "2025-05-12"
+    },
+    {
+        "id": 18,
+        "label": "PAIEMENT PAR CARTE X3141 SQSP* INV181404000 N 10/05",
+        "price": "16.8",
+        "date": "2025-05-12"
+    },
+    {
+        "id": 19,
+        "label": "PAIEMENT PAR CARTE X3141 LW-SNCF CONNECT Pari 08/05",
+        "price": "56.8",
+        "date": "2025-05-09"
+    },
+    {
+        "id": 20,
+        "label": "PRELEVEMENT POLARIS CONSEILS",
+        "price": "374.67",
+        "date": "2025-05-20"
+    },
+    {
+        "id": 21,
+        "label": "PAIEMENT PAR CARTE X3141 TEN CHI SUN PARIS 14/05",
+        "price": "18.0",
+        "date": "2025-05-15"
+    },
+    {
+        "id": 22,
+        "label": "VIREMENT EMIS WEB Anais Galisson Remuneration",
+        "price": "4000.0",
+        "date": "2025-05-15"
+    },
+    {
+        "id": 23,
+        "label": "VIREMENT EN VOTRE FAVEUR VIR INST de CREME DE LA CREME",
+        "price": "2403.20",
+        "date": "2025-05-15"
+    },
+    {
+        "id": 24,
+        "label": "PRELEVEMENT B2B DGFIP",
+        "price": "6078.0",
+        "date": "2025-05-15"
+    }
+]
