@@ -9,7 +9,7 @@ const client = new GoCardlessClient();
 export async function getTransactionsFromRequisition(requisitionId: string, forceRefresh: boolean = false) {
     try {
         // Always check cache first (unless force refresh is explicitly requested)
-        const cachedTransactions = await getCachedTransactions(requisitionId, 168); // 7 day cache (168 hours)
+        const cachedTransactions = await getCachedTransactions(requisitionId, 12); // 0.5 day cache (12 hours)
         if (cachedTransactions && !forceRefresh) {
             console.error('✅ [CACHE] Using cached transactions (API calls limited to 4/day)');
             return { transactions: cachedTransactions };
@@ -23,9 +23,7 @@ export async function getTransactionsFromRequisition(requisitionId: string, forc
         }
 
         // First, let's check if the requisition exists and get its status
-        console.log('🔄 [SERVER] Fetching requisition data for ID:', requisitionId);
         const requisitionData = await client.getRequisition(requisitionId);
-        console.log('🔄 [SERVER] Requisition data:', requisitionData);
 
         if (!requisitionData.accounts || requisitionData.accounts.length === 0) {
             return { transactions: [], account: null, balances: null };
@@ -53,7 +51,7 @@ export async function getTransactionsFromRequisition(requisitionId: string, forc
 
 export async function getCachedTransactionsOnly(requisitionId: string) {
     try {
-        const cachedTransactions = await getCachedTransactions(requisitionId, 168);
+        const cachedTransactions = await getCachedTransactions(requisitionId);
         if (cachedTransactions) {
             console.error('✅ [CACHE] Loading cached transactions only (no API call)');
             return { transactions: cachedTransactions };
@@ -65,26 +63,3 @@ export async function getCachedTransactionsOnly(requisitionId: string) {
     }
 }
 
-export async function debugCache() {
-    try {
-        const db = await getTransactionDb();
-        const allData = db.data.transactions;
-
-        const cacheInfo: Record<string, { transactionCount: number; ageHours: number; timestamp: number }> = {};
-        Object.keys(allData).forEach(key => {
-            const data = allData[key];
-            const ageHours = (Date.now() - data.timestamp) / (1000 * 60 * 60);
-            console.log(`  - ${key}: ${data.data.length} transactions (age: ${Math.round(ageHours)}h)`);
-            cacheInfo[key] = {
-                transactionCount: data.data.length,
-                ageHours: Math.round(ageHours),
-                timestamp: data.timestamp
-            };
-        });
-
-        return { success: true, cacheInfo, keys: Object.keys(allData) };
-    } catch (error: any) {
-        console.error('❌ [CACHE] Error debugging cache:', error.message);
-        return { success: false, error: error.message };
-    }
-} 

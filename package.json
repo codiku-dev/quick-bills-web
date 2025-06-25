@@ -10,12 +10,18 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@lmstudio/sdk": "^1.2.2",
+    "clsx": "^2.1.1",
     "lowdb": "^7.0.1",
+    "lucide-react": "^0.523.0",
     "next": "15.3.4",
     "plaid": "^36.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-plaid-link": "^4.0.1"
+    "react-dropzone": "^14.3.8",
+    "react-plaid-link": "^4.0.1",
+    "tailwind-merge": "^3.3.1",
+    "zod": "^3.25.67"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

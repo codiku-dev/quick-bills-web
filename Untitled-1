@@ -1,0 +1,21 @@
+{
+    "type": [
+        "object",
+        "null"
+    ],
+    "properties": {
+        "id": {
+            "type": "integer"
+        },
+        "label": {
+            "type": "string"
+        },
+        "price": {
+            "type": "string"
+        },
+        "date": {
+            "type": "string",
+            "format": "date"
+        }
+    }
+}

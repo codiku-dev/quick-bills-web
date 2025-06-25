@@ -1,156 +1,319 @@
 {
     "transactions": {
-        "ef968158-47e3-489b-85e3-2fcc254e2f40": {
+        "9be8ae69-6298-4576-a642-544a11f47d45": {
             "data": [
                 {
                     "entryReference": "7821070074642",
-                    "bookingDate": "2025-06-20",
-                    "valueDate": "2025-06-21",
+                    "bookingDate": "2018-12-28",
+                    "valueDate": "2018-12-28",
                     "transactionAmount": {
-                        "amount": "-8.5",
+                        "amount": "-19.10",
                         "currency": "EUR"
                     },
                     "remittanceInformationUnstructuredArray": [
-                        "COTISATION Offre Essentiel"
+                        "PAIEMENT PAR CARTE X3141 BAGELSTEIN PARIS 914 28/12",
+                        ""
                     ],
                     "internalTransactionId": "ff4673fe0bbfd7b8ae74fff882bdf5ff"
                 },
                 {
                     "entryReference": "7818190001813",
-                    "bookingDate": "2025-06-19",
-                    "valueDate": "2025-06-19",
+                    "bookingDate": "2018-03-11",
+                    "valueDate": "2018-03-11",
                     "transactionAmount": {
-                        "amount": "30491.24",
+                        "amount": "-8.50",
                         "currency": "EUR"
                     },
                     "remittanceInformationUnstructuredArray": [
-                        "VIREMENT EN VOTRE FAVEUR NOT SO DARK NOTSODAR-224572-0620",
-                        "Virement NOT SO DARK",
-                        "NOTSODAR-224572-062025104335-0"
+                        "PAIEMENT PAR CARTE X3141 STARBUCKS STPIE09811 11/03"
                     ],
                     "internalTransactionId": "7b9182125c648a43a58426875a2d8089"
                 },
                 {
                     "entryReference": "7814010200728",
-                    "bookingDate": "2025-06-16",
-                    "valueDate": "2025-06-16",
+                    "bookingDate": "2025-03-26",
+                    "valueDate": "2025-03-26",
                     "transactionAmount": {
-                        "amount": "-45.36",
+                        "amount": "-9.70",
                         "currency": "EUR"
                     },
                     "remittanceInformationUnstructuredArray": [
-                        "PRELEVEMENT MATMUT ROUEN",
-                        "2025061600008850020916584",
-                        "C 36M980000548278M 3225877L 00",
-                        "SOC980000548278MMDT01",
-                        "FR43ZZZ299936"
+                        "PAIEMENT PAR CARTE X3141 BAGELSTEIN PARIS 914 25/03"
                     ],
                     "internalTransactionId": "c23fc5053e1c2381c1b36046a0f087a3"
                 },
                 {
                     "entryReference": "7808040208333",
-                    "bookingDate": "2025-06-10",
-                    "valueDate": "2025-06-10",
+                    "bookingDate": "2024-07-06",
+                    "valueDate": "2024-07-06",
                     "transactionAmount": {
-                        "amount": "-66.69",
+                        "amount": "-23.99",
                         "currency": "EUR"
                     },
                     "remittanceInformationUnstructuredArray": [
-                        "PRELEVEMENT MALAKOFF HUMANIS MUTUELLE",
-                        "514807113546 COTISATIONS",
-                        "514807113546 COTISATIONS",
-                        "++PLE-005-3482270857",
-                        "FR16ZZZ343005"
+                        "PAIEMENT PAR CARTE X3141 UEP*SUPER U MONTLOUI 25/05"
                     ],
                     "internalTransactionId": "4655a644f7a6c512ba437b5f661ec08f"
                 },
                 {
                     "entryReference": "7778951053528",
-                    "bookingDate": "2025-06-04",
-                    "valueDate": "2025-06-04",
+                    "bookingDate": "2018-04-11",
+                    "valueDate": "2018-04-11",
                     "transactionAmount": {
-                        "amount": "-2000.0",
+                        "amount": "-12.00",
                         "currency": "EUR"
                     },
                     "remittanceInformationUnstructuredArray": [
-                        "VIREMENT EMIS WEB M.OU MME MADAME GALISSON"
+                        "PAIEMENT PAR CARTE X3141 STARBUCKS STPIE09811 27/05"
                     ],
                     "internalTransactionId": "c26d0cefed9f704b5b90b95d605b227d"
                 },
                 {
                     "entryReference": "7796930003945",
-                    "bookingDate": "2025-05-28",
-                    "valueDate": "2025-05-28",
+                    "bookingDate": "2025-05-26",
+                    "valueDate": "2025-05-26",
                     "transactionAmount": {
-                        "amount": "4836.10",
+                        "amount": "-171.11",
                         "currency": "EUR"
                     },
                     "remittanceInformationUnstructuredArray": [
-                        "VIREMENT EN VOTRE FAVEUR NOT SO DARK NOTSODAR-224572-0520",
-                        "Virement NOT SO DARK",
-                        "NOTSODAR-224572-052025112951-28"
+                        "PAIEMENT PAR CARTE X3141 UEP*SUPER U MONTLOUI 25/05"
                     ],
                     "internalTransactionId": "20d12a1aaa3234a87b043d1decc9190c"
                 },
                 {
                     "entryReference": "7789330073116",
-                    "bookingDate": "2025-05-20",
-                    "valueDate": "2025-05-21",
+                    "bookingDate": "2008-07-06",
+                    "valueDate": "2008-07-06",
                     "transactionAmount": {
-                        "amount": "-8.5",
+                        "amount": "-6.50",
                         "currency": "EUR"
                     },
                     "remittanceInformationUnstructuredArray": [
-                        "COTISATION Offre Essentiel"
+                        "PAIEMENT PAR CARTE X3141 STARBUCKS STPIE09811 06/07"
                     ],
                     "internalTransactionId": "7bffb509469d1f7bcd4248108e7b065d"
                 },
                 {
                     "entryReference": "7786770001045",
-                    "bookingDate": "2025-05-19",
-                    "valueDate": "2025-05-19",
+                    "bookingDate": "2025-04-16",
+                    "valueDate": "2025-04-16",
                     "transactionAmount": {
-                        "amount": "35.95",
+                        "amount": "-14.06",
                         "currency": "EUR"
                     },
                     "remittanceInformationUnstructuredArray": [
-                        "VIREMENT EN VOTRE FAVEUR MHM PREST SANTE PLEIADE 51352380",
-                        "LEBHAR VIGNOLA ROBIN(N25135030C4)",
-                        "513523800796 PRESTATIONS"
+                        "PAIEMENT PAR CARTE X3141 MONOP MARK SPEN PARI 15/04"
                     ],
                     "internalTransactionId": "5316388eb02875b0d71f091565eb227e"
                 },
                 {
                     "entryReference": "7783740005076",
-                    "bookingDate": "2025-05-15",
-                    "valueDate": "2025-05-15",
+                    "bookingDate": "2017-12-28",
+                    "valueDate": "2017-12-28",
                     "transactionAmount": {
-                        "amount": "18.05",
+                        "amount": "-3.70",
                         "currency": "EUR"
                     },
                     "remittanceInformationUnstructuredArray": [
-                        "VIREMENT EN VOTRE FAVEUR C.P.A.M. TOURS 251340002640",
-                        "251340002640",
-                        "251340002640"
+                        "PAIEMENT PAR CARTE X3141 BAGELSTEIN PARIS 914 25/03"
                     ],
                     "internalTransactionId": "a6597379b2f4693b9ba43beccbb7c999"
                 },
                 {
                     "entryReference": "7783570006375",
-                    "bookingDate": "2025-05-15",
-                    "valueDate": "2025-05-15",
+                    "bookingDate": "2025-04-16",
+                    "valueDate": "2025-04-16",
                     "transactionAmount": {
-                        "amount": "-45.36",
+                        "amount": "-5.75",
                         "currency": "EUR"
                     },
                     "remittanceInformationUnstructuredArray": [
-                        "PRELEVEMENT MATMUT ROUEN",
-                        "2025051500008780020917845",
-                        "C 36M980000548278M 3225877L 00",
-                        "SOC980000548278MMDT01",
-                        "FR43ZZZ299936"
+                        "PAIEMENT PAR CARTE X3141 MONOP MARK SPEN PARI 15/04"
                     ],
                     "internalTransactionId": "b531ae28edf03f80feb322190913ea45"
+                },
+                {
+                    "entryReference": "7783570006376",
+                    "bookingDate": "2022-09-26",
+                    "valueDate": "2022-09-26",
+                    "transactionAmount": {
+                        "amount": "-13.50",
+                        "currency": "EUR"
+                    },
+                    "remittanceInformationUnstructuredArray": [
+                        "PAIEMENT PAR CARTE X3141 PITAYA NEUILLY SUR S 26/09"
+                    ],
+                    "internalTransactionId": "b531ae28edf03f80feb322190913ea46"
+                },
+                {
+                    "entryReference": "7783570006377",
+                    "bookingDate": "2025-03-28",
+                    "valueDate": "2025-03-28",
+                    "transactionAmount": {
+                        "amount": "-12.50",
+                        "currency": "EUR"
+                    },
+                    "remittanceInformationUnstructuredArray": [
+                        "PAIEMENT PAR CARTE X3141 PITAYA NEUILLY SUR S 28/03"
+                    ],
+                    "internalTransactionId": "b531ae28edf03f80feb322190913ea47"
+                },
+                {
+                    "entryReference": "7783570006378",
+                    "bookingDate": "2025-12-28",
+                    "valueDate": "2025-12-28",
+                    "transactionAmount": {
+                        "amount": "-3.70",
+                        "currency": "EUR"
+                    },
+                    "remittanceInformationUnstructuredArray": [
+                        "PAIEMENT PAR CARTE X3141 TOKYO PARIS 914 25/03"
+                    ],
+                    "internalTransactionId": "b531ae28edf03f80feb322190913ea48"
+                },
+                {
+                    "entryReference": "7783570006379",
+                    "bookingDate": "2017-08-29",
+                    "valueDate": "2017-08-29",
+                    "transactionAmount": {
+                        "amount": "-3.95",
+                        "currency": "EUR"
+                    },
+                    "remittanceInformationUnstructuredArray": [
+                        "PAIEMENT PAR CARTE X3141 CGF17255PAUL PARIS 29/08"
+                    ],
+                    "internalTransactionId": "b531ae28edf03f80feb322190913ea49"
+                },
+                {
+                    "entryReference": "7783570006380",
+                    "bookingDate": "2025-03-26",
+                    "valueDate": "2025-03-26",
+                    "transactionAmount": {
+                        "amount": "-17.06",
+                        "currency": "EUR"
+                    },
+                    "remittanceInformationUnstructuredArray": [
+                        "PAIEMENT PAR CARTE X3141 LECOINTRE PARIS S La 25/03"
+                    ],
+                    "internalTransactionId": "b531ae28edf03f80feb322190913ea50"
+                },
+                {
+                    "entryReference": "7783570006381",
+                    "bookingDate": "2025-05-13",
+                    "valueDate": "2025-05-13",
+                    "transactionAmount": {
+                        "amount": "760.00",
+                        "currency": "EUR"
+                    },
+                    "remittanceInformationUnstructuredArray": [
+                        "VIREMENT EN VOTRE FAVEUR TLD EUROPE EURSEPA030660"
+                    ],
+                    "internalTransactionId": "b531ae28edf03f80feb322190913ea51"
+                },
+                {
+                    "entryReference": "7783570006382",
+                    "bookingDate": "2025-05-12",
+                    "valueDate": "2025-05-12",
+                    "transactionAmount": {
+                        "amount": "-19.65",
+                        "currency": "EUR"
+                    },
+                    "remittanceInformationUnstructuredArray": [
+                        "PRELEVEMENT ORANGE SA-ORANGE"
+                    ],
+                    "internalTransactionId": "b531ae28edf03f80feb322190913ea52"
+                },
+                {
+                    "entryReference": "7783570006383",
+                    "bookingDate": "2025-05-12",
+                    "valueDate": "2025-05-12",
+                    "transactionAmount": {
+                        "amount": "-16.80",
+                        "currency": "EUR"
+                    },
+                    "remittanceInformationUnstructuredArray": [
+                        "PAIEMENT PAR CARTE X3141 SQSP* INV181404000 N 10/05"
+                    ],
+                    "internalTransactionId": "b531ae28edf03f80feb322190913ea53"
+                },
+                {
+                    "entryReference": "7783570006384",
+                    "bookingDate": "2025-05-09",
+                    "valueDate": "2025-05-09",
+                    "transactionAmount": {
+                        "amount": "-56.80",
+                        "currency": "EUR"
+                    },
+                    "remittanceInformationUnstructuredArray": [
+                        "PAIEMENT PAR CARTE X3141 LW-SNCF CONNECT Pari 08/05"
+                    ],
+                    "internalTransactionId": "b531ae28edf03f80feb322190913ea54"
+                },
+                {
+                    "entryReference": "7783570006385",
+                    "bookingDate": "2025-05-20",
+                    "valueDate": "2025-05-20",
+                    "transactionAmount": {
+                        "amount": "-374.67",
+                        "currency": "EUR"
+                    },
+                    "remittanceInformationUnstructuredArray": [
+                        "PRELEVEMENT POLARIS CONSEILS"
+                    ],
+                    "internalTransactionId": "b531ae28edf03f80feb322190913ea55"
+                },
+                {
+                    "entryReference": "7783570006386",
+                    "bookingDate": "2025-05-15",
+                    "valueDate": "2025-05-15",
+                    "transactionAmount": {
+                        "amount": "-18.00",
+                        "currency": "EUR"
+                    },
+                    "remittanceInformationUnstructuredArray": [
+                        "PAIEMENT PAR CARTE X3141 TEN CHI SUN PARIS 14/05"
+                    ],
+                    "internalTransactionId": "b531ae28edf03f80feb322190913ea56"
+                },
+                {
+                    "entryReference": "7783570006387",
+                    "bookingDate": "2025-05-15",
+                    "valueDate": "2025-05-15",
+                    "transactionAmount": {
+                        "amount": "4000.00",
+                        "currency": "EUR"
+                    },
+                    "remittanceInformationUnstructuredArray": [
+                        "VIREMENT EMIS WEB Anais Galisson Remuneration"
+                    ],
+                    "internalTransactionId": "b531ae28edf03f80feb322190913ea57"
+                },
+                {
+                    "entryReference": "7783570006388",
+                    "bookingDate": "2025-05-15",
+                    "valueDate": "2025-05-15",
+                    "transactionAmount": {
+                        "amount": "2403.20",
+                        "currency": "EUR"
+                    },
+                    "remittanceInformationUnstructuredArray": [
+                        "VIREMENT EN VOTRE FAVEUR VIR INST de CREME DE LA CREME"
+                    ],
+                    "internalTransactionId": "b531ae28edf03f80feb322190913ea58"
+                },
+                {
+                    "entryReference": "7783570006389",
+                    "bookingDate": "2025-05-15",
+                    "valueDate": "2025-05-15",
+                    "transactionAmount": {
+                        "amount": "-6078.00",
+                        "currency": "EUR"
+                    },
+                    "remittanceInformationUnstructuredArray": [
+                        "PRELEVEMENT B2B DGFIP"
+                    ],
+                    "internalTransactionId": "b531ae28edf03f80feb322190913ea59"
                 }
             ],
             "timestamp": 1719240000000,

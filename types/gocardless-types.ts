@@ -139,23 +139,7 @@ export type Institution = {
     max_access_valid_for_days: string;
 };
 
-export type Transaction = {
-    entryReference?: string;
-    internalTransactionId?: string;
-    debtorName?: string;
-    debtorAccount?: {
-        iban: string;
-    };
-    transactionAmount: {
-        currency: string;
-        amount: string;
-    };
-    bookingDate: string;
-    valueDate: string;
-    remittanceInformationUnstructured?: string;
-    remittanceInformationUnstructuredArray?: string[];
-    bankTransactionCode?: string;
-};
+
 
 export type Account = {
     id: string;

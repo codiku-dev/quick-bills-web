@@ -14,14 +14,9 @@ export default function GoCardlessCallbackPage() {
         const ref = searchParams.get('ref');
         const requisition_id = searchParams.get('requisition_id');
         const id = searchParams.get('id');
-
-        console.log('🔍 [CALLBACK] All URL parameters:', Object.fromEntries(searchParams.entries()));
-        console.log('🔍 [CALLBACK] Looking for requisition ID in:', { ref, requisition_id, id });
-
         const idToUse = ref || requisition_id || id;
 
         if (idToUse) {
-            console.log('🔄 [CALLBACK] Found requisition ID:', idToUse);
             setRequisitionId(idToUse);
         } else {
             console.log('⚠️ [CALLBACK] No requisition ID found in URL parameters');

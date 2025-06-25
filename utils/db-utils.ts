@@ -1,6 +1,8 @@
 import { JSONFilePreset } from "lowdb/node";
 import { mkdirSync, existsSync } from "fs";
 import { join } from "path";
+import { SimplifiedTransaction } from "@/types/bill-types";
+import { GoCardlessTransaction } from "@/types/gocardless-types";
 
 // Reference ID to Requisition ID mapping using lowdb
 type RequisitionMapping = {
@@ -52,7 +54,7 @@ export async function getRequisitionIdFromMapping(referenceId: string): Promise<
     return db.data.mappings[referenceId] || null;
 }
 
-export async function saveTransactions(requisitionId: string, transactions: any[]) {
+export async function saveTransactions(requisitionId: string, transactions: GoCardlessTransaction[]) {
     const db = await getTransactionDb();
     await db.update(({ transactions: cache }) => {
         cache[requisitionId] = {
@@ -63,7 +65,7 @@ export async function saveTransactions(requisitionId: string, transactions: any[
     });
 }
 
-export async function getCachedTransactions(requisitionId: string, maxAgeHours: number = 168): Promise<any[] | null> {
+export async function getCachedTransactions(requisitionId: string, maxAgeHours: number = 12): Promise<GoCardlessTransaction[] | null> {
     const db = await getTransactionDb();
     const cached = db.data.transactions[requisitionId];
 
@@ -111,3 +113,4 @@ export async function listAllCachedData() {
 
     return allData;
 }
+

@@ -10,5 +10,4 @@ export {
 export {
     getTransactionsFromRequisition,
     getCachedTransactionsOnly,
-    debugCache
 } from './transactions'; 

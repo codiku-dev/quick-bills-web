@@ -1,27 +1,39 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { getInstitutions, initializeSession, getTransactionsFromRequisition, getCachedTransactionsOnly, testRequisitionExists, testGoCardlessConnection, getRequisitionIdFromReference, checkRateLimitStatus, debugCache } from '@/app/actions/gocardless-actions';
-import { Institution, Transaction } from '@/types/gocardless-types';
-import { ButtonTest } from './ButtonTest';
+import { getInstitutions, initializeSession, getTransactionsFromRequisition, getCachedTransactionsOnly, getRequisitionIdFromReference } from '@/app/actions/gocardless-actions';
+import { Institution, GoCardlessTransaction } from '@/types/gocardless-types';
 import { ConnexionStatus } from './ConnexionStatus';
 import { FormBankCountry } from './FormBankCountry';
 import { FormSelectBank } from './FormSelectBank';
 import { SpinnerBankLoading } from './SpinnerBankLoading';
 import { TransactionList } from './TransactionList';
 import { useLocalStorage } from '../hooks/use-local-storage';
-
-
-
+import { testRequisitionExists } from '../actions/gocardless/requisitions';
+import { billyAiClient } from '../lib/billy-ai-client';
+import { SimplifiedTransaction, SimplifiedTransactionsArraySchema, SimplifiedTransactionSchema } from '@/types/bill-types';
+import { simplifyTransactions } from '@/utils/format-data-utils';
+import { DraggableImagesZone, ImageFile } from './DraggableImagesZone';
+import z from 'zod';
 export function GoCardlessLink() {
     const [institutions, setInstitutions] = useState<Institution[]>([]);
     const [selectedCountry, setSelectedCountry] = useState('FR');
-    const [transactions, setTransactions] = useState<Transaction[]>([]);
+    const [transactions, setTransactions] = useState<GoCardlessTransaction[]>([]);
     const [loading, setLoading] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [step, setStep] = useState<'select-country' | 'select-bank' | 'connecting' | 'connected'>('select-country');
     const [storedRequisitionId, setStoredRequisitionId] = useLocalStorage('gocardless_requisition_id');
+    const [imageMatchList, setImageMatchList] = useState<(SimplifiedTransaction & { base64Image: string })[]>([]);
+    const [isAiCalculating, setIsAiCalculating] = useState(false);
+    const [aiProgress, setAiProgress] = useState(0);
 
+    async function initAiClient() {
+        await billyAiClient.init();
+    }
+
+    useEffect(() => {
+        initAiClient();
+    }, []);
     // Check for requisition ID in URL params (for callback handling)
     useEffect(() => {
         const urlParams = new URLSearchParams(window.location.search);
@@ -32,6 +44,8 @@ export function GoCardlessLink() {
             handleCallback(requisitionId);
         }
     }, []);
+
+
 
     useEffect(() => {
         fetchInstitutions();
@@ -118,68 +132,6 @@ export function GoCardlessLink() {
         }
     };
 
-    const handleTestConnection = async () => {
-        try {
-            const result = await testGoCardlessConnection();
-            if (result.success) {
-                alert(`✅ GoCardless connection successful!\nFound ${result.institutionsCount} institutions\nSandbox available: ${result.hasSandbox ? 'Yes' : 'No'}`);
-            } else {
-                alert(`❌ GoCardless connection failed: ${result.error}`);
-            }
-        } catch (error) {
-            alert(`❌ Test failed: ${error}`);
-        }
-    };
-
-    const handleCheckAccountStatus = async () => {
-        try {
-            const status = await checkRateLimitStatus();
-            if (status.rateLimited) {
-                let message = '❌ Rate limit exceeded!\n\n';
-
-                // Type-safe property access
-                if ('detail' in status && status.detail) {
-                    message += `Details: ${status.detail}\n\n`;
-                }
-
-                if ('summary' in status && status.summary) {
-                    message += `Summary: ${status.summary}\n\n`;
-                }
-
-                if ('retryAfter' in status && status.retryAfter) {
-                    message += `Retry after: ${status.retryAfter} seconds\n`;
-                }
-
-                if ('rateLimitRemaining' in status && status.rateLimitRemaining) {
-                    message += `Remaining requests: ${status.rateLimitRemaining}\n`;
-                }
-
-                if ('rateLimitReset' in status && status.rateLimitReset) {
-                    message += `Rate limit resets: ${status.rateLimitReset}\n`;
-                }
-
-                message += '\nPlease wait before trying again.';
-                alert(message);
-            } else {
-                alert('✅ Account status OK - no rate limits detected');
-            }
-        } catch (error) {
-            alert(`❌ Error checking account status: ${error}`);
-        }
-    };
-
-    const handleDebugCache = async () => {
-        try {
-            const result = await debugCache();
-            if (result.success) {
-                alert('Check console for cache debug info');
-            } else {
-                alert(`❌ Error debugging cache: ${result.error}`);
-            }
-        } catch (error) {
-            alert(`❌ Error debugging cache: ${error}`);
-        }
-    };
 
     const handleLoadCachedTransactions = async (requisitionId?: string) => {
         const idToUse = requisitionId || storedRequisitionId;
@@ -194,7 +146,6 @@ export function GoCardlessLink() {
             const data = await getCachedTransactionsOnly(idToUse);
             setTransactions(data.transactions);
             setStep('connected');
-            alert('✅ Cached transactions loaded successfully!');
         } catch (error: any) {
             console.error('❌ [CLIENT] Error loading cached transactions:', error);
             alert(`Error loading cached transactions: ${error.message}`);
@@ -259,75 +210,97 @@ export function GoCardlessLink() {
             normalizedBic.includes(normalizedSearchTerm);
     });
 
+    const submitImages = async (images: ImageFile[]) => {
+        setIsAiCalculating(true);
+        setAiProgress(0);
+        await billyAiClient.clearContext();
 
+        const base64ImagesPromise = images.map(image => image.file.arrayBuffer());
+        const base64Images = await Promise.all(base64ImagesPromise);
+        const base64ImagesString = base64Images.map(base64Image => Buffer.from(base64Image).toString('base64'));
+
+        const responses = [];
+        const totalImages = base64ImagesString.length;
+
+        for (let i = 0; i < base64ImagesString.length; i++) {
+            const base64Image = base64ImagesString[i];
+
+            // Update progress
+            const progress = ((i + 1) / totalImages) * 100;
+            setAiProgress(progress);
+
+            const response = await billyAiClient.requestAiForStructuredResponse(
+                "",
+                [base64Image],
+                z.null().or(SimplifiedTransactionSchema)
+            );
+            responses.push({ ...response, base64Image });
+            setImageMatchList(responses.filter(response => response !== null) as (SimplifiedTransaction & { base64Image: string })[]);
+        }
+
+        console.log('🔄 [CLIENT] Responses:', responses);
+        setIsAiCalculating(false);
+        setAiProgress(0);
+    };
 
 
     return (
-        <div className="max-w-4xl mx-auto p-6">
-            <h1 className="text-3xl font-bold mb-6">Bank Connection (GoCardless)</h1>
-
-            {/* Debug buttons */}
-            {/* <div className="mb-4 flex gap-2">
-                <ButtonTest onClick={handleTestConnection} />
-                <button
-                    onClick={handleCheckAccountStatus}
-                    className="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600"
-                >
-                    Check Rate Limits
-                </button>
-                <button
-                    onClick={handleDebugCache}
-                    className="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600"
-                >
-                    Debug Cache
-                </button>
-            </div> */}
-
-            {/* Stored Connection Status */}
-            {storedRequisitionId && (
-                <ConnexionStatus
-                    onClickRefetch={handleRefetchFromStatus}
-                    onClickClear={handleClearStoredConnection}
-                    loading={loading}
-                />
-            )}
-
-            {step === 'select-country' && (
-                <FormBankCountry
-                    selectedCountry={selectedCountry}
-                    onChangeCountry={setSelectedCountry}
-                    onSubmit={fetchInstitutions}
-                    isLoading={loading}
-                />
-            )}
-
-            {step === 'select-bank' && (
-                <FormSelectBank
-                    inputSearchTerm={searchTerm}
-                    onChangeInputSearchTerm={setSearchTerm}
-                    filteredInstitutions={filteredInstitutions}
-                    institutions={institutions}
-                    onClickInstitution={handleBankSelection}
-                    onClickBack={() => {
-                        setStep('select-country');
-                        setSearchTerm('');
-                    }}
-                />
-            )}
-
-            {step === 'connecting' && (
-                <SpinnerBankLoading />
-            )}
-
-            {step === 'connected' && transactions.length > 0 && (
-                <div>
-                    <h2 className="text-2xl font-semibold mb-4">Recent Transactions</h2>
-                    <div className="space-y-3">
-                        <TransactionList transactions={transactions} />
-                    </div>
-
+        <div className="  p-6">
+            <div className="flex flex-row gap-6" >
+                <div className="flex-1/7">
+                    {step === 'connected' && transactions.length > 0 && <DraggableImagesZone onImagesSubmit={submitImages} isLoading={isAiCalculating} progress={aiProgress} />}
                 </div>
-            )}
+                <div className="flex-4/5">
+                    <h1 className="text-3xl font-bold mb-6">Bank Connection (GoCardless)</h1>
+
+
+                    {/* Stored Connection Status */}
+                    {storedRequisitionId && (
+                        <ConnexionStatus
+                            onClickRefetch={handleRefetchFromStatus}
+                            onClickClear={handleClearStoredConnection}
+                            loading={loading}
+                        />
+                    )}
+
+                    {step === 'select-country' && (
+                        <FormBankCountry
+                            selectedCountry={selectedCountry}
+                            onChangeCountry={setSelectedCountry}
+                            onSubmit={fetchInstitutions}
+                            isLoading={loading}
+                        />
+                    )}
+
+                    {step === 'select-bank' && (
+                        <FormSelectBank
+                            inputSearchTerm={searchTerm}
+                            onChangeInputSearchTerm={setSearchTerm}
+                            filteredInstitutions={filteredInstitutions}
+                            institutions={institutions}
+                            onClickInstitution={handleBankSelection}
+                            onClickBack={() => {
+                                setStep('select-country');
+                                setSearchTerm('');
+                            }}
+                        />
+                    )}
+
+                    {step === 'connecting' && (
+                        <SpinnerBankLoading />
+                    )}
+
+                    {step === 'connected' && transactions.length > 0 && (
+                        <div>
+                            <h2 className="text-2xl font-semibold mb-4">Recent Transactions</h2>
+                            <div className="space-y-3 max-h-[1000px] overflow-y-auto">
+                                <TransactionList transactions={transactions} imageMatches={imageMatchList} />
+                            </div>
+
+                        </div>
+                    )}
+                </div>
+            </div>
         </div>
     );
 } 

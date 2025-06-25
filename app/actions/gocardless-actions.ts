@@ -10,5 +10,4 @@ export {
     getRequisitionIdFromReference,
     getTransactionsFromRequisition,
     getCachedTransactionsOnly,
-    debugCache
 } from './gocardless';
