@@ -1,16 +1,16 @@
 import { DraggableImagesZone, ImageFile } from '@/components/DraggableImagesZone';
-import { useTransactions } from '@/hooks/use-transactions';
+import { useMatchingTransactionsMutation, useTransactions } from '@/hooks/use-transactions';
 import { useGoCardlessStore } from '@/store/gocardless-store';
 import { useState } from 'react';
 
 export function AiUploadImages() {
   const [progressPercentage, setProgressPercentage] = useState(0);
   const { requisitionId } = useGoCardlessStore();
-  const { transactions, generateMatchingTransactions, isMatchingTransactionsPending } = useTransactions(requisitionId, false);
-
+  const { data: transactions = [], isLoading } = useTransactions(requisitionId);
+  const { mutate: generateMatchingTransactionsMutation, isPending: isMatchingTransactionsPending } = useMatchingTransactionsMutation();
   const onImagesSubmit = (images: ImageFile[]) => {
     setProgressPercentage(0);
-    generateMatchingTransactions({
+    generateMatchingTransactionsMutation({
       billsImages: images.map(image => image.file),
       simplifiedTransactionsToCheck: transactions,
     });

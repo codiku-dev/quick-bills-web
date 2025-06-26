@@ -33,7 +33,11 @@ Make sure to return the exact item from the array, same id, same label, same pri
 Return the exact item from the array in pure JSON, no markdown, no code blocks.
 
 DATA: 
-${JSON.stringify(simplifiedTransactionList, null, 2)}
+${JSON.stringify(
+  simplifiedTransactionList.map(item => ({ id: item.id, label: item.label, price: item.price, date: item.date })),
+  null,
+  2
+)}
 `;
 
 export class BillyAiClient {
