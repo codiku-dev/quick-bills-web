@@ -7,7 +7,10 @@ export const simplifyTransactions = (transactions: GoCardlessTransaction[]): Sim
         label: transaction.remittanceInformationUnstructuredArray?.join(' ') || '',
         price: transaction.transactionAmount.amount,
         date: transaction.bookingDate,
-        detail: transaction.remittanceInformationUnstructuredArray?.join(' ') || ''
+        detail: transaction.remittanceInformationUnstructuredArray?.join(' ') || '',
+        base64Image: undefined,
     }));
     return simplifiedTransactions;
 }
+
+
