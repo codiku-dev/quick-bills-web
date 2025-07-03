@@ -1,7 +1,7 @@
 import { SimplifiedTransaction, SimplifiedTransactionWithBillImage } from '@/types/simplified-transaction-types';
 import { LLM, LMStudioClient } from '@lmstudio/sdk';
 import { z } from 'zod';
-import { fileToBase64 } from '../../lib/utils';
+import { fileToBase64 } from '@/utils/image-utils';
 import { SimplifiedTransactionSchema } from '@/schemas/simplified-transaction-schema';
 
 /*
@@ -40,8 +40,8 @@ ${JSON.stringify(
 )}
 `;
 
-export class BillyAiClient {
-  private static instance: BillyAiClient | null = null;
+export class BillyAiService {
+  private static instance: BillyAiService | null = null;
   private client: LMStudioClient | null = null;
   private modelName: string;
   private model: LLM | null = null;
@@ -51,11 +51,11 @@ export class BillyAiClient {
     this.modelName = modelName;
   }
 
-  public static getInstance(modelName?: string): BillyAiClient {
-    if (!BillyAiClient.instance) {
-      BillyAiClient.instance = new BillyAiClient(modelName);
+  public static getInstance(modelName?: string): BillyAiService {
+    if (!BillyAiService.instance) {
+      BillyAiService.instance = new BillyAiService(modelName);
     }
-    return BillyAiClient.instance;
+    return BillyAiService.instance;
   }
 
   async init() {
@@ -68,7 +68,7 @@ export class BillyAiClient {
 
       // Create client with basic configuration
       this.client = new LMStudioClient({
-        baseUrl: process.env.LMSTUDIO_URL || 'http://localhost:1234',
+        baseUrl: process.env.LMSTUDIO_URL || 'ws://localhost:1234',
         verboseErrorMessages: true,
       });
 
@@ -221,4 +221,4 @@ export class BillyAiClient {
 }
 
 // Export the singleton instance
-export const billyAiClient = BillyAiClient.getInstance();
+export const billyAiService = BillyAiService.getInstance();

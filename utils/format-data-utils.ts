@@ -1,4 +1,4 @@
-import { SimplifiedTransaction, SimplifiedTransactionWithBillImage } from '@/types/simplified-transaction-types';
+import { SimplifiedTransactionWithBillImage } from '@/types/simplified-transaction-types';
 import { GoCardlessTransaction } from '@/types/gocardless-types';
 
 export const simplifyTransactions = (transactions: GoCardlessTransaction[]): SimplifiedTransactionWithBillImage[] => {

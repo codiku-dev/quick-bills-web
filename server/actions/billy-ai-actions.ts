@@ -1,6 +1,6 @@
 'use server';
 
-import { billyAiClient } from '@/server/lib/billy-ai-client';
+import { billyAiService } from '@/server/services/billy-ai-service';
 import { SimplifiedTransaction, SimplifiedTransactionWithBillImage } from '@/types/simplified-transaction-types';
 
 export async function generateMatchingTransactions(
@@ -8,7 +8,8 @@ export async function generateMatchingTransactions(
   simplifiedTransactionsToCheck: SimplifiedTransaction[]
 ): Promise<SimplifiedTransactionWithBillImage[]> {
   try {
-    return await billyAiClient.generateMatchingTransactions(billsImages, simplifiedTransactionsToCheck);
+    const matchingTransactions = await billyAiService.generateMatchingTransactions(billsImages, simplifiedTransactionsToCheck);
+    return matchingTransactions;
   } catch (error: any) {
     throw new Error(`Failed to generate matching transactions: ${error.message}`);
   }
@@ -19,7 +20,7 @@ export async function generateMatchingTransaction(
   simplifiedTransactionsToCheck: SimplifiedTransaction[]
 ): Promise<SimplifiedTransactionWithBillImage> {
   try {
-    return await billyAiClient.generateMatchingTransaction(billsImage, simplifiedTransactionsToCheck);
+    return await billyAiService.generateMatchingTransaction(billsImage, simplifiedTransactionsToCheck);
   } catch (error: any) {
     throw new Error(`Failed to generate matching transaction: ${error.message}`);
   }

@@ -1,4 +1,4 @@
-import { TransactionsManager } from '@/features/transaction-manager';
+import { TransactionsManager } from '@/features/transactions/transaction-manager';
 
 export default function Home() {
   return (

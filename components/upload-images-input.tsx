@@ -3,7 +3,9 @@
 import { useCallback, useState } from "react"
 import { useDropzone } from "react-dropzone"
 import { Upload, X, Image as ImageIcon, Trash2, Loader2 } from "lucide-react"
-import { cn } from "@/lib/utils"
+import { cn } from "@/utils/css-utils"
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
+import { TailwindClass } from "@/types/tailwind-types"
 
 const DEFAULT_MAX_FILES = 100
 
@@ -13,12 +15,18 @@ export type ImageFile = {
     preview: string
 }
 
-export function DraggableImagesZone(p: {
+export type ImageOption = {
+    className?: TailwindClass
+    hoverMessage?: string
+}
+
+export function UploadImagesInput(p: {
     onImagesSubmit?: (images: ImageFile[]) => void
     maxFiles?: number
     className?: string
     isLoading?: boolean
     progressPercentage?: number // 0-100
+    imageOptions?: ImageOption[] // Array of options for each image (className, hoverMessage)
 }) {
     const [images, setImages] = useState<ImageFile[]>([])
 
@@ -99,27 +107,55 @@ export function DraggableImagesZone(p: {
 
     const renderImageGrid = () => (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-            {images.map((image) => (
-                <div key={image.id} className="relative group">
-                    <div className="aspect-square rounded-lg overflow-hidden bg-gray-100 border">
-                        <img
-                            src={image.preview}
-                            alt={image.file.name}
-                            className="w-full h-full object-cover"
-                        />
+            {images.map((image, index) => {
+                const imageOption = p.imageOptions?.[index] || {}
+                const imageContent = (
+                    <div className={cn("relative group ",)}>
+                        <div className="aspect-square rounded-lg overflow-hidden bg-gray-100 border">
+                            <img
+                                src={image.preview}
+                                alt={image.file.name}
+                                className={cn("w-full h-full object-cover ", imageOption.className)}
+                            />
+                        </div>
+                        <button
+                            onClick={() => removeImage(image.id)}
+                            disabled={p.isLoading}
+                            className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            <X className="h-3 w-3" />
+                        </button>
+                        <p className="text-xs text-gray-500 mt-1 truncate">
+                            {image.file.name}
+                        </p>
                     </div>
-                    <button
-                        onClick={() => removeImage(image.id)}
-                        disabled={p.isLoading}
-                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                        <X className="h-3 w-3" />
-                    </button>
-                    <p className="text-xs text-gray-500 mt-1 truncate">
-                        {image.file.name}
-                    </p>
-                </div>
-            ))}
+                );
+
+                return (
+                    <div key={image.id} className={cn(
+                        "relative group",
+
+                    )}>
+                        {imageOption.hoverMessage ? (
+                            <HoverCard>
+                                <HoverCardTrigger asChild>
+                                    {imageContent}
+                                </HoverCardTrigger>
+                                <HoverCardContent className="w-80 p-4">
+                                    <div className="space-y-2">
+                                        <h4 className="font-medium leading-none">Image Details</h4>
+                                        <p className="text-sm text-gray-600 whitespace-pre-line">
+                                            {imageOption.hoverMessage}
+                                        </p>
+                                    </div>
+                                </HoverCardContent>
+                            </HoverCard>
+                        ) : (
+                            imageContent
+                        )}
+                    </div>
+                );
+            })}
         </div>
     )
 

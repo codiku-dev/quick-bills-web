@@ -1,12 +1,9 @@
 'use client';
 
 import { useGoCardlessStore } from '@/store/gocardless-store';
-import { useInstitutions } from '@/hooks/use-institutions';
-import { useMatchingTransactionsData, useTransactions } from '@/hooks/use-transactions';
-import { MenuDataLoader } from '@/features/menu-data-loader';
-import { FormBankCountry } from '@/components/FormBankCountry';
-import { FormSelectBank } from '@/components/FormSelectBank';
-import { SpinnerBankLoading } from '@/features/spinner-bank-loading';
+import { useInstitutions } from '@/hooks/bank/use-institutions';
+import { useMatchingTransactionsData, useTransactions } from '@/hooks/bank/use-transactions';
+import { SpinnerBankLoading } from '@/features/auth-bank/components/spinner-bank-loading';
 import { TransactionList } from '@/components/transaction-list/transaction-list';
 import { AiUploadImages } from '@/features/ai-upload-images/ai-upload-images';
 import { useEffect, useState } from 'react';
@@ -15,10 +12,8 @@ import { SimplifiedTransactionWithBillImage } from '@/types/simplified-transacti
 export function TransactionsManager() {
   const { requisitionId, step, setStep } = useGoCardlessStore();
   const { isLoading: institutionsLoading } = useInstitutions();
-  // const { transactions, timestamp } = useTransactions(requisitionId);
   const { data: transactions = [] } = useTransactions(requisitionId);
   const matchingTransactions = useMatchingTransactionsData();
-  console.log('matchinbg', matchingTransactions);
   const [transactionWithImages, setTransactionWithImages] = useState<SimplifiedTransactionWithBillImage[]>([]);
 
   useEffect(() => {
@@ -63,6 +58,8 @@ export function TransactionsManager() {
   if (institutionsLoading) {
     return <SpinnerBankLoading />;
   }
+  console.log('transactions', transactions);
+
 
   return (
     <div className="p-6">

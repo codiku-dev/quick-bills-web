@@ -3,7 +3,6 @@ import { getTransactionsFromRequisition, getCachedTransactionsOnly } from '@/ser
 import { generateMatchingTransactions } from '@/server/actions/billy-ai-actions';
 import { simplifyTransactions } from '@/utils/format-data-utils';
 import { SimplifiedTransaction, SimplifiedTransactionWithBillImage } from '@/types/simplified-transaction-types';
-import { useEffect, useState, useCallback, useMemo } from 'react';
 
 type MutationParams = {
   billsImages: File[];
@@ -11,7 +10,6 @@ type MutationParams = {
 };
 
 export const useMatchingTransactionsMutation = () => {
-  const queryClient = useQueryClient();
 
   return useMutation({
     mutationKey: ['matching-transactions'],
@@ -34,6 +32,7 @@ export const useMatchingTransactionsData = () => {
 };
 
 export const useTransactions = (requisitionId: string | null, forceRefresh: boolean = false) => {
+  console.log('requisitionId', requisitionId);
   // const [transactions, setTransactions] = useState<SimplifiedTransactionWithBillImage[]>([]);
   // const queryClient = useQueryClient();
 
@@ -60,47 +59,4 @@ export const useTransactions = (requisitionId: string | null, forceRefresh: bool
     enabled: !!requisitionId,
   });
 
-  // const {
-  //   mutate: generateMatchingTransactionsMutation,
-  //   isPending: isMatchingTransactionsPending,
-  //   data: matchingTransactions,
-  // } = useMutation({
-  //   mutationFn: async ({ billsImages, simplifiedTransactionsToCheck }: MutationParams) => {
-  //     console.log('Generating matching transactions...');
-  //     return await generateMatchingTransactions(billsImages, simplifiedTransactionsToCheck);
-  //   },
-  //   onSuccess: data => {
-  //     console.log('Mutation succeeded, invalidating query cache');
-  //     queryClient.invalidateQueries({ queryKey: ['transactions', requisitionId, forceRefresh] });
-  //   },
-  // });
-
-  // // Update transactions when bank transactions change
-  // useEffect(() => {
-  //   if (bankTransactions && bankTransactions.length > 0) {
-  //     console.log('Setting transactions in memory');
-  //     const simplified = simplifyTransactions(bankTransactions);
-  //     console.log('Simplified transactions:', simplified);
-  //     setTransactions(simplified);
-  //   }
-  // }, [bankTransactions]);
-
-  // // Update transactions when matching transactions are available
-  // useEffect(() => {
-  //   if (matchingTransactions && matchingTransactions.length > 0) {
-  //     console.log('Adding image to existing transactions in memory...');
-  //     console.log('matchingTransactions', matchingTransactions);
-
-  //     setTransactions(currentTransactions => {
-  //       console.log('currentTransactions', currentTransactions);
-  //       const updatedTransactions = currentTransactions.map(transaction => {
-  //         const matchingTransaction = matchingTransactions.find(matchingTransaction => matchingTransaction.id === transaction.id);
-  //         return matchingTransaction || transaction;
-  //       });
-  //       console.log('updatedTransactions', updatedTransactions);
-
-  //       return updatedTransactions;
-  //     });
-  //   }
-  // }, [matchingTransactions]);
 };

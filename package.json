@@ -4,6 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "download-gemma3-12b": "lms get google/gemma3-12b",
+    "server": "bash scripts/start-ai-server.sh",
     "prod": "cross-env NODE_ENV=production next dev; echo process.env.NODE_ENV",
     "build": "next build",
     "start": "next start",
@@ -11,30 +13,34 @@
   },
   "dependencies": {
     "@lmstudio/sdk": "^1.2.2",
+    "@radix-ui/react-hover-card": "^1.1.14",
+    "@radix-ui/react-popover": "^1.1.14",
     "@tanstack/react-query": "^5.81.2",
-    "@tanstack/react-query-devtools": "^5.81.2",
     "bufferutil": "^4.0.9",
+    "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lowdb": "^7.0.1",
-    "lucide-react": "^0.523.0",
+    "lucide-react": "^0.525.0",
     "next": "15.3.4",
-    "plaid": "^36.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-dropzone": "^14.3.8",
-    "react-plaid-link": "^4.0.1",
     "tailwind-merge": "^3.3.1",
+    "tailwindest": "^3.2.1",
     "ws": "^8.18.2",
     "zod": "^3.25.67",
     "zustand": "^5.0.5"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@tanstack/react-query-devtools": "^5.81.2",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "cross-env": "^7.0.3",
     "tailwindcss": "^4",
+    "tsx": "^4.19.2",
+    "tw-animate-css": "^1.3.5",
     "typescript": "^5"
   }
 }

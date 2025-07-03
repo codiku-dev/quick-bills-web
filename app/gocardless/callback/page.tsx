@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useGoCardlessStore } from '@/store/gocardless-store';
-import { TransactionsManager } from '@/features/transaction-manager';
+import { TransactionsManager } from '@/features/transactions/transaction-manager';
 
 /* 
     This page is used to handle the callback from GoCardless after the user has connected their bank account.

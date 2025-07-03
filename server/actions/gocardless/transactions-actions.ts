@@ -1,11 +1,11 @@
 'use server';
 
 import { getTransactionDb } from '@/utils/db-utils';
-import { GoCardlessClient } from '@/server/lib/gocardless-client';
+import { GoCardlessService } from '@/server/services/gocardless-service';
 import { GoCardlessTransaction } from '@/types/gocardless-types';
 
 // Create a singleton instance for server actions
-const client = new GoCardlessClient();
+const client = new GoCardlessService();
 
 export async function getTransactionsFromRequisition(requisitionId: string, forceRefresh: boolean = false) {
   try {
@@ -80,6 +80,7 @@ export async function getTransactionsByRequisitionId(
   maxAgeHours: number = 12
 ): Promise<GoCardlessTransaction[] | null> {
   const db = await getTransactionDb();
+  console.log('db', JSON.stringify(db.data));
   const cached = db.data.transactions[requisitionId];
 
   if (!cached) {

@@ -1,7 +1,7 @@
-import { useGoCardlessStore } from '../store/gocardless-store';
-import { useInstitutions } from '../hooks/use-institutions';
+import { useGoCardlessStore } from '@/store/gocardless-store';
+import { useInstitutions } from '@/hooks/bank/use-institutions';
 
-export function FormBankCountry() {
+export function SelectBankCountryForm() {
     const { step, setStep } = useGoCardlessStore();
     const { isLoading: institutionsLoading } = useInstitutions();
 

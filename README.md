@@ -20,6 +20,14 @@ Then, run the development server:
 
 ```bash
 bun dev
+
+Run the lms ai backend
+
+```bash
+npx lmstudio install-cli
+lms get google/gemma3-12b
+lms load google/gemma3-12b
+lms start
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
@@ -45,7 +53,7 @@ gocardless/
 
 ## Architecture
 
-### GoCardlessClient Class (`/lib/gocardless-client.ts`)
+### GoCardlessService Class (`/lib/gocardless-client.ts`)
 
 A pure client class that handles all GoCardless API interactions:
 
@@ -66,9 +74,9 @@ A pure client class that handles all GoCardless API interactions:
 ### Using the Client Directly
 
 ```typescript
-import { GoCardlessClient } from '@/lib/gocardless-client';
+import { GoCardlessService } from '@/lib/gocardless-client';
 
-const client = new GoCardlessClient();
+const client = new GoCardlessService();
 
 // Get institutions
 const institutions = await client.getInstitutions('fr');
@@ -112,7 +120,7 @@ const rateLimitStatus = await checkRateLimitStatus();
 
 ## Public API
 
-The `GoCardlessClient` exposes only the following high-level methods:
+The `GoCardlessService` exposes only the following high-level methods:
 
 ### Institution Methods
 - `getInstitutions(country: string)`: Get available institutions for a country
@@ -135,7 +143,7 @@ The `GoCardlessClient` exposes only the following high-level methods:
 ## Benefits
 
 1. **Clean API**: Only business-level methods are exposed, internal implementation details are hidden
-2. **Reusability**: The `GoCardlessClient` can be used in any context (server actions, API routes, etc.)
+2. **Reusability**: The `GoCardlessService` can be used in any context (server actions, API routes, etc.)
 3. **Maintainability**: Each module has a single responsibility
 4. **Testability**: Pure functions and classes are easier to test
 5. **Type Safety**: Full TypeScript support throughout

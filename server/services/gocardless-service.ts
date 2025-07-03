@@ -10,7 +10,7 @@ import {
   GoCardlessTransactionsResponse,
 } from '@/types/gocardless-types';
 
-export class GoCardlessClient {
+export class GoCardlessService {
   private readonly apiBaseUrl: string;
   private readonly secretId: string;
   private readonly secretKey: string;
@@ -225,7 +225,7 @@ export class GoCardlessClient {
   }
 
   // Rate limit check
-  async checkRateLimit(requisitionId?: string): Promise<{ rateLimited: boolean; [key: string]: any }> {
+  async checkRateLimit(requisitionId?: string): Promise<{ rateLimited: boolean;[key: string]: any }> {
     try {
       const testEndpoint = requisitionId ? `/requisitions/${requisitionId}/` : '/institutions/?country=fr';
 

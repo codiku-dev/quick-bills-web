@@ -1,10 +1,9 @@
 import { useState } from "react";
-import { Institution } from "@/types/gocardless-types";
-import { useGoCardlessStore } from '../store/gocardless-store';
-import { useBankSession } from '../hooks/use-bank-session';
-import { useInstitutions } from '../hooks/use-institutions';
+import { useGoCardlessStore } from '@/store/gocardless-store';
+import { useBankSession } from '@/hooks/bank/use-bank-session';
+import { useInstitutions } from '@/hooks/bank/use-institutions';
 
-export function FormSelectBank() {
+export function SelectBankInstitutionForm() {
     const { setStep } = useGoCardlessStore();
     const { mutate: initializeBankSession, isPending } = useBankSession();
     const { data: institutions = [] } = useInstitutions();

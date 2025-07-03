@@ -1,13 +1,12 @@
 'use server';
 
-import { GoCardlessInstitution } from '@/types/gocardless-types';
 import { getRequisitionDb } from '@/utils/db-utils';
 import { randomUUID } from 'crypto';
-import { GoCardlessClient } from '@/server/lib/gocardless-client';
+import { GoCardlessService } from '@/server/services/gocardless-service';
 import { headers } from 'next/headers';
 
 // Create a singleton instance for server actions
-const client = new GoCardlessClient();
+const client = new GoCardlessService();
 
 async function saveRequisitionMapping(referenceId: string, requisitionId: string) {
   const db = await getRequisitionDb();

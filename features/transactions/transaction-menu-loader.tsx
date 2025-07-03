@@ -1,8 +1,8 @@
 import { useGoCardlessStore } from '@/store/gocardless-store';
-import { useTransactions } from '@/hooks/use-transactions';
+import { useTransactions } from '@/hooks/bank/use-transactions';
 import { useQueryClient } from '@tanstack/react-query';
 
-export function MenuDataLoader() {
+export function TransactionMenuLoader() {
   const { requisitionId, setRequisitionId } = useGoCardlessStore();
   const queryClient = useQueryClient();
   const { isLoading: transactionsLoading } = useTransactions(requisitionId);

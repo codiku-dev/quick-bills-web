@@ -1,8 +1,8 @@
 'use server';
 import { GoCardlessInstitution } from '@/types/gocardless-types';
-import { GoCardlessClient } from '@/server/lib/gocardless-client';
+import { GoCardlessService } from '@/server/services/gocardless-service';
 
-const client = new GoCardlessClient();
+const client = new GoCardlessService();
 
 export async function getInstitutions(country: string): Promise<GoCardlessInstitution[]> {
   try {
