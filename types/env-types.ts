@@ -3,7 +3,8 @@ declare global {
     interface ProcessEnv {
       GOCARDLESS_SECRET_ID: string;
       GOCARDLESS_SECRET_KEY: string;
-      NEXT_PUBLIC_APP_URL: string;
+      LMSTUDIO_URL: string;
+      DATABASE_URL: string;
     }
   }
 }

@@ -2,10 +2,10 @@ import { z } from "zod";
 
 // Define the Bill schema using Zod
 export const SimplifiedTransactionSchema = z.object({
-    id: z.string().or(z.null()),
-    label: z.string().or(z.null()),
-    price: z.string().or(z.null()),
-    date: z.string().or(z.null()),
+    id: z.string(),
+    label: z.string(),
+    price: z.string(),
+    date: z.string(),
     detail: z.string()
 })
 

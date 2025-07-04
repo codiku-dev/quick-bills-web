@@ -1,8 +1,8 @@
 import { SimplifiedTransactionWithBillImage } from '@/types/simplified-transaction-types';
-import { GoCardlessTransaction } from '@/types/gocardless-types';
+import { NonNullableValues } from '@/types/ts-helper';
 
 interface TransactionListItemProps {
-  item: SimplifiedTransactionWithBillImage;
+  item: NonNullableValues<SimplifiedTransactionWithBillImage>;
 }
 
 export function TransactionListItem({ item }: TransactionListItemProps) {

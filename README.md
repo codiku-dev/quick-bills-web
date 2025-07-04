@@ -114,8 +114,6 @@ import {
 const institutions = await getInstitutions('fr');
 const session = await initializeSession(institutionId);
 const transactions = await getTransactionsFromRequisition(requisitionId);
-const connectionStatus = await testGoCardlessConnection();
-const rateLimitStatus = await checkRateLimitStatus();
 ```
 
 ## Public API

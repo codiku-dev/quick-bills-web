@@ -1,8 +1,8 @@
 import { useMutation, useMutationState, useQuery, useQueryClient } from '@tanstack/react-query';
-import { getTransactionsFromRequisition, getCachedTransactionsOnly } from '@/server/actions/gocardless/gocardless-actions';
 import { generateMatchingTransactions } from '@/server/actions/billy-ai-actions';
 import { simplifyTransactions } from '@/utils/format-data-utils';
 import { SimplifiedTransaction, SimplifiedTransactionWithBillImage } from '@/types/simplified-transaction-types';
+import { getTransactionsByUserId } from '@/server/actions/transaction/transaction-actions';
 
 type MutationParams = {
   billsImages: File[];
@@ -31,17 +31,14 @@ export const useMatchingTransactionsData = () => {
   return data.length > 0 && data[data.length - 1] ? (data[data.length - 1] as SimplifiedTransactionWithBillImage[]) : [];
 };
 
-export const useTransactions = (requisitionId: string | null, forceRefresh: boolean = false) => {
-  console.log('requisitionId', requisitionId);
-  // const [transactions, setTransactions] = useState<SimplifiedTransactionWithBillImage[]>([]);
-  // const queryClient = useQueryClient();
+export const useTransactions = (userId: string | null, forceRefresh: boolean = false) => {
 
   return useQuery({
-    queryKey: ['transactions', requisitionId, forceRefresh],
+    queryKey: ['transactions', userId, forceRefresh],
     queryFn: async () => {
       console.log('Fetching transactions from server...');
-      if (!requisitionId) {
-        throw new Error('No requisition ID provided');
+      if (!userId) {
+        throw new Error('No user ID provided');
       }
       if (forceRefresh) {
         console.log('Force refreshing transactions...');
@@ -49,14 +46,12 @@ export const useTransactions = (requisitionId: string | null, forceRefresh: bool
         console.log('Fetching cached transactions...');
       }
 
-      const transactions = forceRefresh
-        ? await getTransactionsFromRequisition(requisitionId, true)
-        : await getCachedTransactionsOnly(requisitionId);
+      const transactions = await getTransactionsByUserId(userId, forceRefresh);
 
       const simplifiedTransactions = simplifyTransactions(transactions);
       return simplifiedTransactions;
     },
-    enabled: !!requisitionId,
+    enabled: !!userId,
   });
 
 };

@@ -1,0 +1,1 @@
+export type Step = 'select-country' | 'select-bank' | 'connecting' | 'connected' | 'transactions';

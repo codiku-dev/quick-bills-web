@@ -1,0 +1,67 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String? // Optional for now, can be added later
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  requisition  Requisition? // One-to-one relationship
+  transactions Transaction[]
+
+  @@map("users")
+}
+
+model Requisition {
+  id            String   @id @default(cuid())
+  userId        String   @unique // One user can only have one requisition
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  requisitionId String   @unique // GoCardless requisition ID - this is the unique identifier
+  institutionId String
+  status        String   @default("PENDING") // PENDING, ACTIVE, EXPIRED, etc.
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  transactions Transaction[]
+
+  @@map("requisitions")
+}
+
+model Transaction {
+  id            String      @id @default(cuid())
+  userId        String
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  requisitionId String
+  requisition   Requisition @relation(fields: [requisitionId], references: [requisitionId], onDelete: Cascade)
+
+  // Transaction details
+  entryReference                    String?
+  internalTransactionId             String   @unique
+  debtorName                        String?
+  debtorAccountIban                 String?
+  transactionAmount                 String // Store as string to preserve precision
+  transactionCurrency               String
+  bookingDate                       DateTime
+  valueDate                         DateTime
+  remittanceInformationUnstructured String?
+  bankTransactionCode               String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("transactions")
+}

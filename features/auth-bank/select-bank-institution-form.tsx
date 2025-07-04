@@ -1,11 +1,9 @@
 import { useState } from "react";
 import { useGoCardlessStore } from '@/store/gocardless-store';
-import { useBankSession } from '@/hooks/bank/use-bank-session';
 import { useInstitutions } from '@/hooks/bank/use-institutions';
 
 export function SelectBankInstitutionForm() {
     const { setStep } = useGoCardlessStore();
-    const { mutate: initializeBankSession, isPending } = useBankSession();
     const { data: institutions = [] } = useInstitutions();
     const [searchTerm, setSearchTerm] = useState('');
 
@@ -31,7 +29,7 @@ export function SelectBankInstitutionForm() {
 
     const handleBankSelection = (institutionId: string) => {
         setStep('connecting');
-        initializeBankSession(institutionId);
+        // TODO: Implement bank session
     };
 
     return (
